@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30709.64
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Server", "IEvangelist.Blazing.WarFleet\Server\IEvangelist.Blazing.WarFleet.Server.csproj", "{A3DECA69-7C48-47A5-B2EB-D256A0E0FB5F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Client", "IEvangelist.Blazing.WarFleet\Client\IEvangelist.Blazing.WarFleet.Client.csproj", "{A60E10E3-5D78-4C7D-8254-2429E3E3A692}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Shared", "IEvangelist.Blazing.WarFleet\Shared\IEvangelist.Blazing.WarFleet.Shared.csproj", "{D5E4376E-15E2-496D-A5E7-6962C4A9216F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Server.Tests", "IEvangelist.Blazing.WarFleet\IEvangelist.Blazing.WarFleet.Server.Tests\IEvangelist.Blazing.WarFleet.Server.Tests.csproj", "{3139A44F-81D7-46E2-8ED4-5F4C4EE698B3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IEvangelist.Blazing.WarFleet.Shared.Tests", "IEvangelist.Blazing.WarFleet\IEvangelist.Blazing.WarFleet.Shared.Tests\IEvangelist.Blazing.WarFleet.Shared.Tests.csproj", "{3AB4313A-12DB-4DD6-A0E5-6EF5A4709A94}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A3DECA69-7C48-47A5-B2EB-D256A0E0FB5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3DECA69-7C48-47A5-B2EB-D256A0E0FB5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3DECA69-7C48-47A5-B2EB-D256A0E0FB5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3DECA69-7C48-47A5-B2EB-D256A0E0FB5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A60E10E3-5D78-4C7D-8254-2429E3E3A692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A60E10E3-5D78-4C7D-8254-2429E3E3A692}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A60E10E3-5D78-4C7D-8254-2429E3E3A692}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A60E10E3-5D78-4C7D-8254-2429E3E3A692}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5E4376E-15E2-496D-A5E7-6962C4A9216F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5E4376E-15E2-496D-A5E7-6962C4A9216F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5E4376E-15E2-496D-A5E7-6962C4A9216F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5E4376E-15E2-496D-A5E7-6962C4A9216F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3139A44F-81D7-46E2-8ED4-5F4C4EE698B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3139A44F-81D7-46E2-8ED4-5F4C4EE698B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3139A44F-81D7-46E2-8ED4-5F4C4EE698B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3139A44F-81D7-46E2-8ED4-5F4C4EE698B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AB4313A-12DB-4DD6-A0E5-6EF5A4709A94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AB4313A-12DB-4DD6-A0E5-6EF5A4709A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AB4313A-12DB-4DD6-A0E5-6EF5A4709A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AB4313A-12DB-4DD6-A0E5-6EF5A4709A94}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AC44BB18-5472-4439-A68C-62684065118F}
+	EndGlobalSection
+EndGlobal
