@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public static class EnumerableExtensions
+namespace IEvangelist.Blazing.WarFleet
 {
-    public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+    public static class EnumerableExtensions
     {
-        if (source is List<T> list)
+        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
         {
-            list.ForEach(action);
-            return;
-        }
+            if (source is List<T> list)
+            {
+                list.ForEach(action);
+                return;
+            }
 
-        foreach (var item in source)
-        {
-            action(item);
+            foreach (var item in source)
+            {
+                action(item);
+            }
         }
     }
 }

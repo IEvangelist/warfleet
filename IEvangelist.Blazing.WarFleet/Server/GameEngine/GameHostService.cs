@@ -21,7 +21,7 @@ namespace IEvangelist.Blazing.WarFleet
         public ValueTask<IEnumerable<Game>> GetJoinableGamesAsync() =>
             _gameRepository.GetAsync(game => game.PlayerTwo == null);
 
-        public async ValueTask<Player?> TryJoinGameAsync(string gameId, string playerName)
+        public async ValueTask<(Game Game, Player? Player, bool Joined)> TryJoinGameAsync(string gameId, string playerName)
         {
             var game = await _gameRepository.GetAsync(gameId);
             var player = game.TryJoinGame(playerName);
@@ -30,7 +30,7 @@ namespace IEvangelist.Blazing.WarFleet
                 await _gameRepository.UpdateAsync(game);
             }
 
-            return player;
+            return (game, player, player is not null);
         }
     }
 }

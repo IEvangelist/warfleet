@@ -19,7 +19,7 @@ namespace IEvangelist.Blazing.WarFleet
         {
             { PlayerOne: null } => PlayerOne = playerName,
             { PlayerTwo: null } => PlayerTwo = playerName,
-            _ => null
+            _ => default
         };
     }
 }

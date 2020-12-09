@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using IEvangelist.Blazing.WarFleet.Shared.Extensions;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace IEvangelist.Blazing.WarFleet.Shared

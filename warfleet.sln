@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFlee
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IEvangelist.Blazing.WarFleet.Shared.Tests", "IEvangelist.Blazing.WarFleet\IEvangelist.Blazing.WarFleet.Shared.Tests\IEvangelist.Blazing.WarFleet.Shared.Tests.csproj", "{3AB4313A-12DB-4DD6-A0E5-6EF5A4709A94}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C7DEB11F-EECB-4B01-8997-62D570C82B0F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5D758254-45DE-4D79-996D-8D39246671F7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +46,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A3DECA69-7C48-47A5-B2EB-D256A0E0FB5F} = {C7DEB11F-EECB-4B01-8997-62D570C82B0F}
+		{A60E10E3-5D78-4C7D-8254-2429E3E3A692} = {C7DEB11F-EECB-4B01-8997-62D570C82B0F}
+		{D5E4376E-15E2-496D-A5E7-6962C4A9216F} = {C7DEB11F-EECB-4B01-8997-62D570C82B0F}
+		{3139A44F-81D7-46E2-8ED4-5F4C4EE698B3} = {5D758254-45DE-4D79-996D-8D39246671F7}
+		{3AB4313A-12DB-4DD6-A0E5-6EF5A4709A94} = {5D758254-45DE-4D79-996D-8D39246671F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AC44BB18-5472-4439-A68C-62684065118F}

@@ -1,5 +1,6 @@
 ﻿using IEvangelist.Blazing.WarFleet.Server.Extensions;
 using IEvangelist.Blazing.WarFleet.Shared;
+using IEvangelist.Blazing.WarFleet.Shared.Extensions;
 using Microsoft.Azure.CosmosRepository;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +48,7 @@ namespace IEvangelist.Blazing.WarFleet
         public async ValueTask<Game> PlacePlayerShipsAsync(
             string gameId,
             string playerId,
-            IList<Ship> ships)
+            IEnumerable<Ship> ships)
         {
             var game = await _gameRepository.GetAsync(gameId);
             var (player, _) = game.GetPlayerAndOpponent(playerId);

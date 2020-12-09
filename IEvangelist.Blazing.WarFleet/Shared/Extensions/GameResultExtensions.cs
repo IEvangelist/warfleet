@@ -1,4 +1,6 @@
-﻿namespace IEvangelist.Blazing.WarFleet.Shared
+﻿using IEvangelist.Blazing.WarFleet.Shared;
+
+namespace IEvangelist.Blazing.WarFleet
 {
     public static class GameResultExtensions
     {
