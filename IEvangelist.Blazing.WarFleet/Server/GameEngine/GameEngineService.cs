@@ -1,7 +1,4 @@
-﻿using IEvangelist.Blazing.WarFleet.Server.Extensions;
-using IEvangelist.Blazing.WarFleet.Shared;
-using IEvangelist.Blazing.WarFleet.Shared.Extensions;
-using Microsoft.Azure.CosmosRepository;
+﻿using Microsoft.Azure.CosmosRepository;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,9 +7,9 @@ namespace IEvangelist.Blazing.WarFleet
 {
     public class GameEngineService
     {
-        readonly IRepository<Game> _gameRepository;
+        readonly IRepository<ServerGame> _gameRepository;
 
-        public GameEngineService(IRepository<Game> gameRepository) =>
+        public GameEngineService(IRepository<ServerGame> gameRepository) =>
             _gameRepository = gameRepository;
 
         public async ValueTask<PlayerShotResult> ProcessPlayerShotAsync(
@@ -20,7 +17,8 @@ namespace IEvangelist.Blazing.WarFleet
             string playerId,
             Position shotPlacement)
         {
-            var game = await _gameRepository.GetAsync(gameId);
+            var serverGame = await _gameRepository.GetAsync(gameId);
+            var game = serverGame.Game;
             var (player, opponent) = game.GetPlayerAndOpponent(playerId);
             var (shipName, _) =
                 opponent.PlacementBoard
@@ -40,21 +38,22 @@ namespace IEvangelist.Blazing.WarFleet
             game.Result = gameResult;
 
             return new PlayerShotResult(
-                await _gameRepository.UpdateAsync(game),
+                await _gameRepository.UpdateAsync(serverGame),
                 isHit,
                 shipName);
         }
 
-        public async ValueTask<Game> PlacePlayerShipsAsync(
+        public async ValueTask<ServerGame> PlacePlayerShipsAsync(
             string gameId,
             string playerId,
             IEnumerable<Ship> ships)
         {
-            var game = await _gameRepository.GetAsync(gameId);
+            var serverGame = await _gameRepository.GetAsync(gameId);
+            var game = serverGame.Game;
             var (player, _) = game.GetPlayerAndOpponent(playerId);
             ships.ForEach(ship => player.PlacementBoard.Ships.Add(ship));
 
-            return await _gameRepository.UpdateAsync(game);
+            return await _gameRepository.UpdateAsync(serverGame);
         }
     }
 }

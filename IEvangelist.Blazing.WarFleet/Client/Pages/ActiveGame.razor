@@ -1,0 +1,9 @@
+﻿@page "/game/{gameId}"
+
+<h1><i class="fas fa-ship pr-2"></i> Game</h1>
+
+<button type="button" class="btn btn-danger" disabled="@(!_fireShotButtonEnabled)">
+    <i class="fas fa-meteor pr-2"></i> Fire
+</button>
+
+<GameGrid />

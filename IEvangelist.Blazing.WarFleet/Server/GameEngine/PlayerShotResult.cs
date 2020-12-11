@@ -1,7 +1,7 @@
 ﻿namespace IEvangelist.Blazing.WarFleet
 {
     public record PlayerShotResult(
-        Game Game,
+        ServerGame Server,
         bool IsHit,
         string? ShipName = null);
 }

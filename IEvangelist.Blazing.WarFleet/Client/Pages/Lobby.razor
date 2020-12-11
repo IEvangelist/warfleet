@@ -1,0 +1,55 @@
+﻿@page "/lobby"
+@inject HttpClient Http
+@using Microsoft.AspNetCore.SignalR.Client
+
+<h1 title="@(ConnectionState)">
+    @{
+        var (status, color) = ConnectionState switch
+        {
+            HubConnectionState.Disconnected => ("fa-unlink", "tomato"),
+            HubConnectionState.Connected => ("fa-link", "green"),
+            _ => ("fa-cog fa-spin", "lightgrey")
+        };
+    }
+    <i class="fas @($"{status}") pr-2" style="color: @(color)"></i> Lobby
+</h1>
+
+<div class="input-group mb-3">
+    <input type="text" class="form-control" @bind="PlayerName"
+           placeholder="Name" aria-label="Name">
+    <div class="input-group-append">
+        <button type="button" class="btn btn-primary"
+                disabled="@(!HasValidName)"
+                @onclick="@(async _ => await StartGame())">
+            <i class="fas fa-plus pr-2"></i> New Game
+        </button>
+    </div>
+</div>
+
+<h2>Joinable Games</h2>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Player</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var (gameId, game) in JoinableGames ?? new Dictionary<string, Game>())
+        {
+            <tr>
+                <td>
+                    <button type="button" class="btn btn-secondary"
+                            disabled="@(!HasValidName)"
+                            @onclick="@(async _ => await TryJoinGame(gameId))">
+                        <i class="fas fa-sign-in-alt pr-2"></i> Join
+                    </button>
+                </td>
+                <td>
+                    @($"{game.PlayerOne.Name} is looking for an opponent.")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

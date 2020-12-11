@@ -1,14 +1,10 @@
-﻿using IEvangelist.Blazing.WarFleet.Shared;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace IEvangelist.Blazing.WarFleet.Server.Hubs
 {
-    // Start game   -> "GameStarted" <game>, "WaitingForOpponent" <gameId>
-    // Join game    -> "PlayerJoined" <player>
-    // Place ships  -> "GameUpdated" <game>
-    // Call shot    -> "ShotFired" <Result,IsHit,ShipName>
     public class GameHub : Hub
     {
         readonly GameEngineService _gameEngineService;
@@ -22,15 +18,26 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
             var game = await _gameHostService.StartGameAsync(playerName);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, game.Id);
-            await Clients.Caller.SendAsync("GameStarted", game);
+            await Clients.Caller.SendAsync("InitiatingGame", game.Id);
+            await NewGamesAvailableAsync();
             await Clients.Group(game.Id).SendAsync("WaitingForOpponent", game.Id);
-            await Clients.Others.SendAsync("GameStarted", game);
+        }
+
+        async Task NewGamesAvailableAsync()
+        {
+            var serverGames = await _gameHostService.GetJoinableGamesAsync();
+            await Clients.All.SendAsync(
+                "NewGamesAvailable", serverGames.ToDictionary(sg => sg.Id, sg => sg.Game));
         }
 
         public async ValueTask JoinGame(string gameId, string playerName)
         {
             var (game, player, joined) = await _gameHostService.TryJoinGameAsync(gameId, playerName);
-            if (joined) await Clients.Group(game.Id).SendAsync("PlayerJoined", player);
+            if (joined)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+                await Clients.Group(game.Id).SendAsync("PlayerJoined", player);
+            }
         }
 
         public async ValueTask PlaceShips(string gameId, string playerId, IEnumerable<Ship> ships)
@@ -41,19 +48,21 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
 
         public async ValueTask CallShot(string gameId, string playerId, Position shot)
         {
-            var result = await _gameEngineService.ProcessPlayerShotAsync(gameId, playerId, shot);
-            var gameResult = result.Game.Result;
-            await Clients.Group(result.Game.Id).SendAsync("ShotFired",
-            new
-            {
-                GameResult = gameResult,
-                result.IsHit,
-                result.ShipName
-            });
+            var shotResult = await _gameEngineService.ProcessPlayerShotAsync(gameId, playerId, shot);
+            var ((game, _), isHit, shipName) = shotResult;
+            await Clients.Group(gameId).SendAsync("ShotFired",
+                game.Result,
+                isHit,
+                shipName);
             
-            if (gameResult.IsWinningResult())
+            if (game.Result.IsWinningResult())
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, gameId);
+            }
+            else
+            {
+                var (_, opponent) = game.GetPlayerAndOpponent(playerId);
+                await Clients.Group(gameId).SendAsync("NextTurn", opponent.Id);
             }
         }
     }

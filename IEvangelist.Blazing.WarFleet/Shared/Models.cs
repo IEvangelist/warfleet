@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace IEvangelist.Blazing.WarFleet.Shared
+namespace IEvangelist.Blazing.WarFleet
 {
     public record Player(
         string Name,

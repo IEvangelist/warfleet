@@ -1,9 +1,6 @@
-﻿using IEvangelist.Blazing.WarFleet.Shared;
-using Microsoft.Azure.CosmosRepository;
-
-namespace IEvangelist.Blazing.WarFleet
+﻿namespace IEvangelist.Blazing.WarFleet
 {
-    public class Game : Item
+    public class Game
     {
         public Player PlayerOne { get; set; } = null!;
 
@@ -15,7 +12,7 @@ namespace IEvangelist.Blazing.WarFleet
             (PlayerOne?.ShipsPlaced ?? false) &&
             (PlayerTwo?.ShipsPlaced ?? false);
 
-        internal Player? TryJoinGame(string playerName) => this switch
+        public Player? TryJoinGame(string playerName) => this switch
         {
             { PlayerOne: null } => PlayerOne = playerName,
             { PlayerTwo: null } => PlayerTwo = playerName,
