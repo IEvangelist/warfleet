@@ -11,11 +11,14 @@ namespace IEvangelist.Blazing.WarFleet
         public GameHostService(IRepository<ServerGame> gameRepository) =>
             _gameRepository = gameRepository;
 
-        public ValueTask<ServerGame> StartGameAsync(string playerName) =>
+        public ValueTask<ServerGame> StartGameAsync(
+            string gameId, BoardSize size, string playerName) =>
             _gameRepository.CreateAsync(new ServerGame
             {
+                Id = gameId,
                 Game = new()
                 {
+                    BoardSize = size,
                     PlayerOne = playerName
                 }
             });

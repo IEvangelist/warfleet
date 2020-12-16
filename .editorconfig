@@ -1,0 +1,7 @@
+﻿[*.cs]
+
+# IDE0061: Use block body for local functions
+csharp_style_expression_bodied_local_functions = true:suggestion
+
+# CS8603: Possible null reference return.
+dotnet_diagnostic.CS8603.severity = suggestion

@@ -1,5 +1,4 @@
 ﻿@page "/lobby"
-@inject HttpClient Http
 @using Microsoft.AspNetCore.SignalR.Client
 
 <h1 title="@(ConnectionState)">
@@ -11,18 +10,28 @@
             _ => ("fa-cog fa-spin", "lightgrey")
         };
     }
-    <i class="fas @($"{status}") pr-2" style="color: @(color)"></i> Lobby
+    <i class="fas @(status) pr-2" style="color: @color"></i> Lobby
 </h1>
 
 <div class="input-group mb-3">
     <input type="text" class="form-control" @bind="PlayerName"
            placeholder="Name" aria-label="Name">
     <div class="input-group-append">
-        <button type="button" class="btn btn-primary"
-                disabled="@(!HasValidName)"
-                @onclick="@(async _ => await StartGame())">
-            <i class="fas fa-plus pr-2"></i> New Game
-        </button>
+        @foreach (var size in new[] { BoardSize.FiveByFive, BoardSize.TenByTen, BoardSize.TwentyByTwenty })
+        {
+            static string Stringify(BoardSize size) => size switch
+            {
+                BoardSize.FiveByFive => "5x5",
+                BoardSize.TenByTen => "10x10",
+                _ => "20x20",
+            };
+
+            <button type="button" class="btn btn-primary"
+                    disabled="@(!HasValidName)"
+                    @onclick="@(_ => StartGame(size))">
+                <i class="fas fa-plus pr-2"></i> New @(Stringify(size)) Game
+            </button>
+        }
     </div>
 </div>
 
@@ -33,6 +42,8 @@
         <tr>
             <th scope="col">#</th>
             <th scope="col">Player</th>
+            <th scope="col">Rules</th>
+            <th scope="col">Started</th>
         </tr>
     </thead>
     <tbody>
@@ -40,9 +51,9 @@
         {
             <tr>
                 <td>
-                    <button type="button" class="btn btn-secondary"
+                    <button type="button" class="btn btn-dotnet"
                             disabled="@(!HasValidName)"
-                            @onclick="@(async _ => await TryJoinGame(gameId))">
+                            @onclick="@(_ => TryJoinGame(gameId))">
                         <i class="fas fa-sign-in-alt pr-2"></i> Join
                     </button>
                 </td>

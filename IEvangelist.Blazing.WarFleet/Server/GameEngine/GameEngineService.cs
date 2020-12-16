@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.CosmosRepository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,14 +22,13 @@ namespace IEvangelist.Blazing.WarFleet
             var game = serverGame.Game;
             var (player, opponent) = game.GetPlayerAndOpponent(playerId);
             var (shipName, _) =
-                opponent.PlacementBoard
-                        .Ships
+                opponent.ShipPlacement
                         .Select(ship => (ship.Name, Occupancy: ship.GetShipOccupancy()))
                         .FirstOrDefault(ship => ship.Occupancy.Contains(shotPlacement));
             var isHit = shipName is { Length: > 0 };
-            player.TrackingBoard.ShotsFired.Add(new(shotPlacement, isHit));
+            player.ShotsFired.Add(new(shotPlacement, isHit));
 
-            var hasWonGame = player.HasWonGame(opponent.PlacementBoard.Ships);
+            var hasWonGame = player.HasWonGame(opponent.ShipPlacement);
             var gameResult = hasWonGame
                 ? player.Id == game.PlayerOne.Id
                     ? GameResult.PlayerOneWins
@@ -36,6 +36,10 @@ namespace IEvangelist.Blazing.WarFleet
                 : GameResult.Active;
 
             game.Result = gameResult;
+            if (gameResult.IsWinningResult() && !serverGame.Ended.HasValue)
+            {
+                serverGame.Ended = DateTime.UtcNow;
+            }
 
             return new PlayerShotResult(
                 await _gameRepository.UpdateAsync(serverGame),
@@ -51,7 +55,7 @@ namespace IEvangelist.Blazing.WarFleet
             var serverGame = await _gameRepository.GetAsync(gameId);
             var game = serverGame.Game;
             var (player, _) = game.GetPlayerAndOpponent(playerId);
-            ships.ForEach(ship => player.PlacementBoard.Ships.Add(ship));
+            ships.ForEach(ship => player.ShipPlacement.Add(ship));
 
             return await _gameRepository.UpdateAsync(serverGame);
         }

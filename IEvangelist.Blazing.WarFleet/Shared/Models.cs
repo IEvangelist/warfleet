@@ -5,17 +5,18 @@ using System.Linq;
 
 namespace IEvangelist.Blazing.WarFleet
 {
-    public record Player(
-        string Name,
-        TrackingBoard TrackingBoard,
-        PlacementBoard PlacementBoard)
+    public record Player(string Name)
     {
         public string Id { get; init; } = Guid.NewGuid().ToString();
 
-        public bool ShipsPlaced => PlacementBoard.Ships.Any();
+        public HashSet<PlayerMove> ShotsFired { get; init; } = new();
+
+        public HashSet<Ship> ShipPlacement { get; init; } = new();
+
+        public bool ShipsPlaced => ShipPlacement.Any();
 
         public static implicit operator Player(string playerName) =>
-            new(playerName, new(Defaults.GameBoard), new(Defaults.GameBoard));
+            new(playerName);
     }
 
     /// <summary>A ship that takes up five spaces.</summary>
@@ -54,22 +55,16 @@ namespace IEvangelist.Blazing.WarFleet
         Position? TopLeftPosition = null,
         ShipAlignment Alignment = default);
 
-    public record TrackingBoard(HashSet<Position> Cells) : GameBoard(Cells)
+    [DebuggerDisplay("{Row}-{Column}")]
+    public record Position(char Row, byte Column)
     {
-        public HashSet<PlayerMove> ShotsFired { get; init; } = new HashSet<PlayerMove>();
+        public override string ToString() => $"{Row}-{Column}";
     }
-    public record PlacementBoard(HashSet<Position> Cells) : GameBoard(Cells)
-    {
-        public HashSet<Ship> Ships { get; init; } = new HashSet<Ship>();
-    }
-    public record GameBoard(HashSet<Position> Cells);
-
-    [DebuggerDisplay("{Row}:{Column}")]
-    public record Position(char Row, byte Column);
 
     public record PlayerMove(Position Shot, bool IsHit);
 
     public enum ShotResult { NotFired, Miss, Hit };
     public enum ShipAlignment { Horizontal, Vertical };
     public enum GameResult { NotYetStarted, Active, PlayerOneWins, PlayerTwoWins };
+    public enum BoardSize { FiveByFive = -1, TenByTen, TwentyByTwenty };
 }

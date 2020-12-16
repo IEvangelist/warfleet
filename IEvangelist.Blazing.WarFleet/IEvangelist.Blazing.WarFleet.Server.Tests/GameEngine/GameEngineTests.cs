@@ -1,5 +1,4 @@
-﻿using IEvangelist.Blazing.WarFleet.Shared;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.CosmosRepository;
 using Moq;
 using System.Collections.Generic;
@@ -73,28 +72,29 @@ namespace IEvangelist.Blazing.WarFleet.Tests
         {
             TestGame testGame = new(_playerOneShips, _playerTwoShips);
 
-            var mock = new Mock<IRepository<Game>>();
-            var taskWrappedGame = Task.FromResult<Game>(testGame);
-            var valueTask = new ValueTask<Game>(taskWrappedGame);
+            var mock = new Mock<IRepository<ServerGame>>();
+            var taskWrappedGame = Task.FromResult<ServerGame>(testGame);
+            var valueTask = new ValueTask<ServerGame>(taskWrappedGame);
             mock.Setup(repo => repo.GetAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>())).Returns(valueTask);
             mock.Setup(repo => repo.GetAsync(It.IsAny<string>(), It.IsAny<PartitionKey>(), It.IsAny<CancellationToken>())).Returns(valueTask);
-            mock.Setup(repo => repo.UpdateAsync(It.IsAny<Game>(), It.IsAny<CancellationToken>())).Returns(valueTask);
+            mock.Setup(repo => repo.UpdateAsync(It.IsAny<ServerGame>(), It.IsAny<CancellationToken>())).Returns(valueTask);
 
             var engine = new GameEngineService(mock.Object);
 
-            var result = await engine.ProcessPlayerShotAsync("1", testGame.PlayerOne.Id, new(row, col));
+            var result = await engine.ProcessPlayerShotAsync("1", testGame.Game.PlayerOne.Id, new(row, col));
             Assert.Equal(expectedAsHit, result.IsHit);
             Assert.Equal(nameof(Carrier), result.ShipName);
-            Assert.Contains(new(new(row, col), true), testGame.PlayerOne.TrackingBoard.ShotsFired);
-            Assert.Equal(GameResult.Active, testGame.Result);
+            Assert.Contains(new(new(row, col), true), testGame.Game.PlayerOne.ShotsFired);
+            Assert.Equal(GameResult.Active, testGame.Game.Result);
         }
     }
 
-    public class TestGame : Game
+    public class TestGame : ServerGame
     {
-        public TestGame(HashSet<Ship> playerOneShips, HashSet<Ship> playerTwoShips) =>
-            (PlayerOne, PlayerTwo) =
-                (new("Player 1", new(Defaults.GameBoard), new(Defaults.GameBoard) { Ships = playerOneShips }),
-                 new("Player 2", new(Defaults.GameBoard), new(Defaults.GameBoard) { Ships = playerTwoShips }));
+        public TestGame(HashSet<Ship> playerOneShips, HashSet<Ship> playerTwoShips) => Game = new()
+        {
+            PlayerOne = new("Player 1") { ShipPlacement = playerOneShips },
+            PlayerTwo = new("Player 2") { ShipPlacement = playerTwoShips }
+        };
     }
 }

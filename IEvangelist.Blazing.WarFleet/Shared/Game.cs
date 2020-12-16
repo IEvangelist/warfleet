@@ -6,7 +6,9 @@
 
         public Player PlayerTwo { get; set; } = null!;
 
-        public GameResult Result { get; set; }
+        public BoardSize BoardSize { get; set; } = BoardSize.TenByTen;
+
+        public GameResult Result { get; set; } = GameResult.NotYetStarted;
 
         public bool PlayersReady =>
             (PlayerOne?.ShipsPlaced ?? false) &&

@@ -58,8 +58,8 @@ namespace IEvangelist.Blazing.WarFleet.Shared.Tests
             {
                 new Game
                 {
-                    PlayerOne = new("", null, null) { Id = knownPlayerId },
-                    PlayerTwo = new("", null, null) { Id = knownOpponentId }
+                    PlayerOne = new("") { Id = knownPlayerId },
+                    PlayerTwo = new("") { Id = knownOpponentId }
                 },
                 knownPlayerId,
                 knownPlayerId,
@@ -69,8 +69,8 @@ namespace IEvangelist.Blazing.WarFleet.Shared.Tests
             {
                 new Game
                 {
-                    PlayerOne = new("", null, null) { Id = knownPlayerId },
-                    PlayerTwo = new("", null, null) { Id = knownOpponentId }
+                    PlayerOne = new("") { Id = knownPlayerId },
+                    PlayerTwo = new("") { Id = knownOpponentId }
                 },
                 knownOpponentId,
                 knownOpponentId,

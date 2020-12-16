@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace IEvangelist.Blazing.WarFleet.Client.Pages
@@ -13,6 +15,9 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
         [Inject]
         public NavigationManager NavigationManager { get; set; } = null!;
 
+        [Inject]
+        public HttpClient Http { get; set; } = null!;
+
         public bool HasValidName => PlayerName is { Length: >= 3 };
         public string PlayerName { get; set; } = null!;
         public IDictionary<string, Game>? JoinableGames { get; set; } = null!;
@@ -21,44 +26,45 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            JoinableGames =
+                await Http.GetFromJsonAsync<IDictionary<string, Game>>("api/games/joinable");
+
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl(NavigationManager.ToAbsoluteUri("/gamehub"))
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<string>("InitiatingGame", OnInitiatingGame);
-            _hubConnection.On<IDictionary<string, Game>>("NewGamesAvailable", OnNewGamesAvailableAsync);
+            _hubConnection.On<IDictionary<string, Game>>(
+                "JoinableGamesUpdated", OnJoinableGamesUpdatedAsync);
 
             await _hubConnection.StartAsync();
         }
 
-        async Task OnNewGamesAvailableAsync(IDictionary<string, Game> games)
-        {
+        async Task OnJoinableGamesUpdatedAsync(IDictionary<string, Game> games) =>
             await InvokeAsync(() =>
             {
                 JoinableGames = games;
                 StateHasChanged();
             });
-        }
 
-        public async Task StartGame()
+        public void StartGame(BoardSize size)
         {
             if (PlayerName is not { Length: >= 3 })
             {
                 return;
             }
 
-            await _hubConnection.InvokeAsync(nameof(StartGame), PlayerName);
+            NavigationManager.NavigateTo($"game/{Guid.NewGuid()}?newGame=true&playerName={PlayerName}&boardSize={size}");
         }
 
-        void OnInitiatingGame(string gameId)
+        public void TryJoinGame(string gameId)
         {
-            NavigationManager.NavigateTo($"game/{gameId}");
-        }
+            if (PlayerName is not { Length: >= 3 })
+            {
+                return;
+            }
 
-        async Task TryJoinGame(string gameId)
-        {
-            await _hubConnection.InvokeAsync("JoinGame", gameId, PlayerName);
+            NavigationManager.NavigateTo($"game/{gameId}?playerName={PlayerName}");
         }
 
         public async ValueTask DisposeAsync()

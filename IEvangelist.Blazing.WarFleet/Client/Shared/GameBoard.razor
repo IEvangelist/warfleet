@@ -1,0 +1,13 @@
+﻿<div class="container text-center h-75">
+    <div class="game-board">
+        @foreach (var cell in Size.ToPositionSet())
+        {
+            <div class="@($"{cell}")"></div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public BoardSize Size { get; set; }
+}

@@ -1,4 +1,26 @@
-﻿html, body {
+﻿:root {
+    --dotnet-purple: #512bd4;
+    --dotnet-purple-hover: #4411BB;
+    --dotnet-purple-border-hover: #3311BB;
+}
+
+.bg-dotnet {
+    background-color: var(--dotnet-purple) !important;
+}
+
+.btn-dotnet {
+    color: #fff;
+    background-color: var(--dotnet-purple);
+    border-color: var(--dotnet-purple);
+}
+
+    .btn-dotnet:hover {
+        color: #fff;
+        background-color: var(--dotnet-purple-hover);
+        border-color: var(--dotnet-purple-border-hover);
+    }
+
+html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
@@ -49,17 +71,417 @@ a, .btn-link {
 
 .game-board {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(10, 1fr);
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-template-areas:
-        ". . . . . . . . . ."
-        ". . . . . . . . . ."
-        ". . . . . . . . . ."
-        ". . . . . . . . . ."
-        ". . . . . . . . . ."
-        ". . . . . . . . . ."
-        ". . . . . . . . . ."
-        ". . . . . . . . . ."
-        ". . . . . . . . . ."
-        ". . . . . . . . . .";
+        "A-1 A-2 A-3 A-4 A-5 A-6 A-7 A-8 A-9 A-10"
+        "B-1 B-2 B-3 B-4 B-5 B-6 B-7 B-8 B-9 B-10"
+        "C-1 C-2 C-3 C-4 C-5 C-6 C-7 C-8 C-9 C-10"
+        "D-1 D-2 D-3 D-4 D-5 D-6 D-7 D-8 D-9 D-10"
+        "E-1 E-2 E-3 E-4 E-5 E-6 E-7 E-8 E-9 E-10"
+        "F-1 F-2 F-3 F-4 F-5 F-6 F-7 F-8 F-9 F-10"
+        "G-1 G-2 G-3 G-4 G-5 G-6 G-7 G-8 G-9 G-10"
+        "H-1 H-2 H-3 H-4 H-5 H-6 H-7 H-8 H-9 H-10"
+        "I-1 I-2 I-3 I-4 I-5 I-6 I-7 I-8 I-9 I-10"
+        "J-1 J-2 J-3 J-4 J-5 J-6 J-7 J-8 J-9 J-10";
+}
+
+.A-1 {
+    grid-area: A-1;
+}
+
+.A-2 {
+    grid-area: A-2;
+}
+
+.A-3 {
+    grid-area: A-3;
+}
+
+.A-4 {
+    grid-area: A-4;
+}
+
+.A-5 {
+    grid-area: A-5;
+}
+
+.A-6 {
+    grid-area: A-6;
+}
+
+.A-7 {
+    grid-area: A-7;
+}
+
+.A-8 {
+    grid-area: A-8;
+}
+
+.A-9 {
+    grid-area: A-9;
+}
+
+.A-10 {
+    grid-area: A-10;
+}
+
+.B-1 {
+    grid-area: B-1;
+}
+
+.B-2 {
+    grid-area: B-2;
+}
+
+.B-3 {
+    grid-area: B-3;
+}
+
+.B-4 {
+    grid-area: B-4;
+}
+
+.B-5 {
+    grid-area: B-5;
+}
+
+.B-6 {
+    grid-area: B-6;
+}
+
+.B-7 {
+    grid-area: B-7;
+}
+
+.B-8 {
+    grid-area: B-8;
+}
+
+.B-9 {
+    grid-area: B-9;
+}
+
+.B-10 {
+    grid-area: B-10;
+}
+
+.C-10 {
+    grid-area: C-10;
+}
+
+.D-10 {
+    grid-area: D-10;
+}
+
+.E-10 {
+    grid-area: E-10;
+}
+
+.F-10 {
+    grid-area: F-10;
+}
+
+.G-10 {
+    grid-area: G-10;
+}
+
+.H-10 {
+    grid-area: H-10;
+}
+
+.I-10 {
+    grid-area: I-10;
+}
+
+.J-10 {
+    grid-area: J-10;
+}
+
+.J-9 {
+    grid-area: J-9;
+}
+
+.I-9 {
+    grid-area: I-9;
+}
+
+.H-9 {
+    grid-area: H-9;
+}
+
+.G-9 {
+    grid-area: G-9;
+}
+
+.F-9 {
+    grid-area: F-9;
+}
+
+.E-9 {
+    grid-area: E-9;
+}
+
+.D-9 {
+    grid-area: D-9;
+}
+
+.C-9 {
+    grid-area: C-9;
+}
+
+.C-1 {
+    grid-area: C-1;
+}
+
+.D-1 {
+    grid-area: D-1;
+}
+
+.J-1 {
+    grid-area: J-1;
+}
+
+.I-1 {
+    grid-area: I-1;
+}
+
+.H-1 {
+    grid-area: H-1;
+}
+
+.G-1 {
+    grid-area: G-1;
+}
+
+.F-1 {
+    grid-area: F-1;
+}
+
+.E-1 {
+    grid-area: E-1;
+}
+
+.C-2 {
+    grid-area: C-2;
+}
+
+.C-3 {
+    grid-area: C-3;
+}
+
+.C-4 {
+    grid-area: C-4;
+}
+
+.C-5 {
+    grid-area: C-5;
+}
+
+.C-6 {
+    grid-area: C-6;
+}
+
+.C-7 {
+    grid-area: C-7;
+}
+
+.C-8 {
+    grid-area: C-8;
+}
+
+.D-2 {
+    grid-area: D-2;
+}
+
+.D-3 {
+    grid-area: D-3;
+}
+
+.D-4 {
+    grid-area: D-4;
+}
+
+.D-5 {
+    grid-area: D-5;
+}
+
+.D-6 {
+    grid-area: D-6;
+}
+
+.D-7 {
+    grid-area: D-7;
+}
+
+.D-8 {
+    grid-area: D-8;
+}
+
+.E-2 {
+    grid-area: E-2;
+}
+
+.E-3 {
+    grid-area: E-3;
+}
+
+.E-4 {
+    grid-area: E-4;
+}
+
+.E-5 {
+    grid-area: E-5;
+}
+
+.E-6 {
+    grid-area: E-6;
+}
+
+.E-7 {
+    grid-area: E-7;
+}
+
+.E-8 {
+    grid-area: E-8;
+}
+
+.F-2 {
+    grid-area: F-2;
+}
+
+.F-3 {
+    grid-area: F-3;
+}
+
+.F-4 {
+    grid-area: F-4;
+}
+
+.F-5 {
+    grid-area: F-5;
+}
+
+.F-6 {
+    grid-area: F-6;
+}
+
+.F-7 {
+    grid-area: F-7;
+}
+
+.F-8 {
+    grid-area: F-8;
+}
+
+.J-2 {
+    grid-area: J-2;
+}
+
+.J-3 {
+    grid-area: J-3;
+}
+
+.J-4 {
+    grid-area: J-4;
+}
+
+.J-5 {
+    grid-area: J-5;
+}
+
+.J-6 {
+    grid-area: J-6;
+}
+
+.J-7 {
+    grid-area: J-7;
+}
+
+.J-8 {
+    grid-area: J-8;
+}
+
+.I-2 {
+    grid-area: I-2;
+}
+
+.I-3 {
+    grid-area: I-3;
+}
+
+.I-4 {
+    grid-area: I-4;
+}
+
+.I-5 {
+    grid-area: I-5;
+}
+
+.I-6 {
+    grid-area: I-6;
+}
+
+.I-7 {
+    grid-area: I-7;
+}
+
+.I-8 {
+    grid-area: I-8;
+}
+
+.H-2 {
+    grid-area: H-2;
+}
+
+.H-3 {
+    grid-area: H-3;
+}
+
+.H-4 {
+    grid-area: H-4;
+}
+
+.H-5 {
+    grid-area: H-5;
+}
+
+.H-6 {
+    grid-area: H-6;
+}
+
+.H-7 {
+    grid-area: H-7;
+}
+
+.H-8 {
+    grid-area: H-8;
+}
+
+.G-2 {
+    grid-area: G-2;
+}
+
+.G-3 {
+    grid-area: G-3;
+}
+
+.G-4 {
+    grid-area: G-4;
+}
+
+.G-5 {
+    grid-area: G-5;
+}
+
+.G-6 {
+    grid-area: G-6;
+}
+
+.G-7 {
+    grid-area: G-7;
+}
+
+.G-8 {
+    grid-area: G-8;
 }
