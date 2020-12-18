@@ -1,13 +1,39 @@
-﻿<div class="container text-center h-75">
-    <div class="game-board">
-        @foreach (var cell in Size.ToPositionSet())
-        {
-            <div class="@($"{cell}")"></div>
-        }
-    </div>
+﻿@{ 
+    var size = Size switch
+    {
+        BoardSize.FiveByFive => "5",
+        BoardSize.TwentyByTwenty => "20",
+        _ => "10"
+    };
+
+    var shipOccupancies =
+            Ships?.Select(ship => (Ship: ship, Occupancy: ship.GetShipOccupancy()))
+                 .ToDictionary(t => t.Ship, t => t.Occupancy);
+}
+
+<div class="game-board game-board-@size">
+    @foreach (var cell in Size.ToPositionSet())
+    {
+        <div class="@cell.ToString()">
+            <svg>
+                @if (shipOccupancies is { Count: > 0 })
+                {
+                    var (ship, occupancy) =
+                        shipOccupancies.FirstOrDefault(kvp => kvp.Value.Contains(cell));
+                    if (ship is not null)
+                    {
+                        <ShipPlacement Ship="ship" Cell="cell" />
+                    }
+                }
+            </svg>
+        </div>
+    }
 </div>
 
 @code {
     [Parameter]
     public BoardSize Size { get; set; }
+
+    [Parameter]
+    public HashSet<Ship> Ships { get; set; } = null!;
 }

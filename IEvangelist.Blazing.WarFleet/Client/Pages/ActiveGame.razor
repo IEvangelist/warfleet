@@ -13,15 +13,19 @@
     <i class="fas fa-ship pr-2" style="color: @color"></i> Game
 </h1>
 
-<button type="button" class="btn btn-lg btn-dotnet"
-        title="Choose a row and column to fire at, then shot by clicking here."
-        disabled="@(!_fireShotButtonEnabled)">
-    <i class="fas fa-meteor pr-2"></i> Fire
-</button>
+<div class="pb-2">
+    <button type="button" class="btn btn-lg btn-dotnet"
+            title="Choose a row and column to fire at, then shot by clicking here."
+            disabled="@(!_fireShotButtonEnabled)">
+        <i class="fas fa-meteor pr-2"></i> Fire
+    </button>
+</div>
 
 @if (_game is not null)
 {
-    <GameBoard Size="_game.BoardSize" />
+    <div class="pb-2">
+        <GameBoard Size="_game.BoardSize" />
+    </div>
 }
 else
 {

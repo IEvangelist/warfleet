@@ -40,10 +40,9 @@
 <table class="table table-hover">
     <thead>
         <tr>
-            <th scope="col">#</th>
+            <th scope="col"></th>
             <th scope="col">Player</th>
             <th scope="col">Rules</th>
-            <th scope="col">Started</th>
         </tr>
     </thead>
     <tbody>
@@ -58,7 +57,19 @@
                     </button>
                 </td>
                 <td>
-                    @($"{game.PlayerOne.Name} is looking for an opponent.")
+                    @($"{game.PlayerOne.Name} is waiting for an opponent.")
+                </td>
+                <td>
+                    @{ 
+                        var rulesText = game.BoardSize switch
+                        {
+                            BoardSize.FiveByFive => "SMALL: 5x5 game board with three ships.",
+                            BoardSize.TwentyByTwenty => "LARGE: 20x20 game board with ten ships.",
+                            _ => "STANDARD: 10x10 game board with five ships."
+                        };
+                    }
+
+                    @rulesText
                 </td>
             </tr>
         }

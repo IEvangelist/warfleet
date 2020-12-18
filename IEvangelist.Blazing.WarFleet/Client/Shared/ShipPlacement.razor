@@ -1,0 +1,41 @@
+﻿@if (Ship is not { TopLeftPosition: null })
+{
+    var isVerticallyAligned = Ship.Alignment == ShipAlignment.Vertical;
+    var isStart = Ship.TopLeftPosition == Cell;
+    var isEnd = isVerticallyAligned
+        ? (char)(Ship.TopLeftPosition.Row + Ship.Size - 1) == Cell.Row
+        : (byte)(Ship.TopLeftPosition.Column + Ship.Size - 1) == Cell.Column;
+
+    var rectX = isVerticallyAligned ? "10%" : isStart ? "50%" : "0";
+    var rectY = isVerticallyAligned ? isStart ? "50%" : "0" : "10%";
+
+    var width = isVerticallyAligned ? "80%" : (isStart || isEnd ? "50%" : "100%");
+    var height = isVerticallyAligned ? (isStart || isEnd ? "50%" : "100%") : "80%";
+
+    if (isStart)
+    {
+        <circle cx="50%" cy="50%" r="20"
+                stroke-width="1" stroke="#ededed" fill="#ededed">
+        </circle>
+    }
+
+    <rect x="@rectX" y="@rectY" width="@width" height="@height"
+          stroke-width="1" stroke="#000" fill="#ededed"
+          title="@Ship.Name">
+    </rect>
+
+    if (isEnd)
+    {
+        <circle cx="50%" cy="50%" r="20"
+                stroke-width="1" stroke="#ededed" fill="#ededed">
+        </circle>
+    }
+}
+
+@code {
+    [Parameter]
+    public Position Cell { get; set; } = null!;
+
+    [Parameter]
+    public Ship Ship { get; set; } = null!;
+}

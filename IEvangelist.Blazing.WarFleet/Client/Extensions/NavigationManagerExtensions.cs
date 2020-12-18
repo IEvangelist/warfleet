@@ -17,13 +17,13 @@ namespace IEvangelist.Blazing.WarFleet.Client.Extensions
 
                 static TValue Parse<TValue>(string val) => typeof(TValue).FullName switch
                 {
-                    "System.Enum" => (TValue)(Enum.TryParse(typeof(TValue), val, out var result) ? result : default),
                     "System.Int32" => (TValue)(object)val.ToInt32(),
                     "System.Boolean" => (TValue)(object)val.ToBool(),
                     "System.Decimal" => (TValue)(object)val.ToDecimal(),
                     "System.String" => (TValue)(object)val,
 
-                    _ => throw new Exception("Nope...")
+                    _ when typeof(TValue).IsEnum => (TValue)(Enum.TryParse(typeof(TValue), val, out var result) ? result : default),
+                    _ => throw new Exception($"Unknown parse type: {typeof(TValue)} is not handled.")
                 };
             }
 

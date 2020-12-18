@@ -1,0 +1,10 @@
+﻿@if (Result != ShotResult.NotFired)
+{
+    string fill = Result == ShotResult.Hit ? "red" : "white";
+    <circle cx="50%" cy="50%" r="10" stroke-width="1" stroke="#000" fill="@fill" />
+}
+
+@code {
+    [Parameter]
+    public ShotResult Result { get; set; }
+}
