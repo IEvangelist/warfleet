@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,6 +19,8 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
         bool _fireShotButtonEnabled;
         bool _isNewGame;
         string _playerName = null!;
+        List<Ship> _availableShips = null!;
+        HashSet<Ship> _placedShips = new();
 
         [Inject]
         public ILogger<ActiveGame> Log { get; set; } = null!;
@@ -36,6 +37,9 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
         public string PlayerId { get; set; } = null!;
         public HubConnectionState ConnectionState =>
             _hubConnection?.State ?? HubConnectionState.Disconnected;
+
+        public Ship DraggingShip { get; set; } = null!;
+        public Position DraggingShipPosition { get; set; } = null!;
 
         protected override async Task OnInitializedAsync()
         {
@@ -63,6 +67,21 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
             await startOrJoinGameTask;
         }
 
+        async Task PlacePlayerShips()
+        {
+            //PlaceShips(string gameId, string playerId, IEnumerable<Ship> ships)
+            await _hubConnection.InvokeAsync("PlaceShips", GameId, _playerName, _availableShips);
+        }
+
+        async Task OnShipPlaced(Ship ship) =>
+            await InvokeAsync(() =>
+            {
+                _placedShips.Add(ship);
+                _availableShips?.Remove(ship);
+
+                StateHasChanged();
+            });
+
         async Task OnGameLogUpdatedAsync(string message) =>
             await InvokeAsync(() =>
             {
@@ -79,6 +98,8 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
             await InvokeAsync(() =>
             {
                 _game = game;
+                _availableShips = _game.BoardSize.ToShipSet();
+
                 StateHasChanged();
             });
 

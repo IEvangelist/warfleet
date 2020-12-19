@@ -11,5 +11,13 @@ namespace IEvangelist.Blazing.WarFleet
 
             _ => Defaults.TenByTenBoard
         };
+
+        public static List<Ship> ToShipSet(this BoardSize boardSize) => boardSize switch
+        {
+            BoardSize.TwentyByTwenty => Defaults.TwentyByTwentyRules,
+            BoardSize.FiveByFive => Defaults.FiveByFiveRules,
+
+            _ => Defaults.TenByTenRules
+        };
     }
 }

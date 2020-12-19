@@ -1,4 +1,4 @@
-﻿@{ 
+﻿@{
     var size = Size switch
     {
         BoardSize.FiveByFive => "5",
@@ -11,10 +11,14 @@
                  .ToDictionary(t => t.Ship, t => t.Occupancy);
 }
 
-<div class="game-board game-board-@size">
+<div class="game-board game-board-@size"
+     ondragover="event.preventDefault();"
+     ondragstart="event.dataTransfer.setData('', event.target.className);"
+     @ondrop="@OnDrop">
     @foreach (var cell in Size.ToPositionSet())
     {
-        <div class="@cell.ToString()">
+        <div class="@cell.ToString()"
+             @ondragenter="@(() => OnDragEnter(cell))">
             <svg>
                 @if (shipOccupancies is { Count: > 0 })
                 {
@@ -31,9 +35,30 @@
 </div>
 
 @code {
+    [CascadingParameter]
+    ActiveGame ActiveGame { get; set; } = null!;
+
     [Parameter]
     public BoardSize Size { get; set; }
 
     [Parameter]
     public HashSet<Ship> Ships { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<Ship> ShipPlaced { get; set; }
+
+    async Task OnDrop(DragEventArgs drag)
+    {
+        var placedShip = ActiveGame.DraggingShip with
+        {
+            TopLeftPosition = ActiveGame.DraggingShipPosition
+        };
+
+        if ((Ships ??= new()).Add(placedShip))
+        {
+            await ShipPlaced.InvokeAsync(ActiveGame.DraggingShip);
+        }
+    }
+
+    void OnDragEnter(Position cell) => ActiveGame.DraggingShipPosition = cell;
 }

@@ -1,0 +1,24 @@
+﻿<div class='pr-2 draggable' draggable='true' @ondragstart="@(() => OnDragStart(Ship))">
+    @{
+        var isVertical = Ship.Alignment == ShipAlignment.Vertical;
+        var height = isVertical ? Ship.Size * 60 - 10 : 50;
+        var width = isVertical ? 50 : Ship.Size * 60 - 10;
+    }
+    <svg height="@height" width="@width" stoke="transparent">
+        <rect x="0" y="0" rx="30" ry="30" height="@height" width="@width"
+              stroke="#000" fill="#ededed"></rect>
+        <text x="50%" y="65%" text-anchor="middle">
+            @($"{(isVertical ? Ship.Name[0] : Ship.Name)}")
+        </text>
+    </svg>
+</div>
+
+@code {
+    [CascadingParameter]
+    ActiveGame ActiveGame { get; set; } = null!;
+
+    [Parameter]
+    public Ship Ship { get; set; } = null!;
+
+    void OnDragStart(Ship ship) => ActiveGame.DraggingShip = ship;
+} 

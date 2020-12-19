@@ -6,6 +6,39 @@ namespace IEvangelist.Blazing.WarFleet
 {
     static class Defaults
     {
+        internal static List<Ship> FiveByFiveRules { get; } =
+            new()
+            {
+                new Carrier(),
+                new Battleship(),
+                new Submarine()
+            };
+
+        internal static List<Ship> TenByTenRules { get; } =
+            new()
+            {
+                new Carrier(),
+                new Battleship(),
+                new Destroyer(),
+                new Submarine(),
+                new PatrolBoat()
+            };
+
+        internal static List<Ship> TwentyByTwentyRules { get; } =
+            new()
+            {
+                new Carrier(),
+                new Carrier(),
+                new Battleship(),
+                new Battleship(),
+                new Destroyer(),
+                new Destroyer(),
+                new Submarine(),
+                new Submarine(),
+                new PatrolBoat(),
+                new PatrolBoat()
+            };
+
         /// <summary>
         /// The board size with a 5x5 grid, and rows decorated as 'A'-'E' and columns 1-5.
         /// </summary>

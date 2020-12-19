@@ -77,6 +77,28 @@ a, .btn-link {
     cursor: pointer;
 }
 
+svg {
+    font-family: sans-serif;
+    border: none;
+    overflow: visible;
+    user-select: none;
+}
+svg text {
+    font-size: 1.2em;
+}
+
+.draggable {
+    cursor: grab;
+}
+
+    .draggable:active {
+        cursor: grabbing;
+    }
+
+.dragging {
+    cursor: grabbing;
+}
+
 .game-board {
     display: grid;
     height: 604px;
@@ -136,7 +158,11 @@ a, .btn-link {
         width: 60px;
     }
 
-    .game-board svg:hover {
+    .game-board svg rect {
+        stroke-width: 0;
+    }
+
+    .game-board.ships-placed svg:hover {
         border: dashed 2px royalblue;
         cursor: pointer;
         background: rgba(0, 0, 0, .2);

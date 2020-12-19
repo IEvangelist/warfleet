@@ -14,29 +14,41 @@
 </h1>
 
 <div class="pb-2">
-    <button type="button" class="btn btn-lg btn-dotnet"
+    <button type="button" class="btn btn-lg btn-primary"
+            disabled="@(_availableShips?.Count() > 0)"
+            @onclick="@PlacePlayerShips"
+            title="Set ships">
+        <i class="fas fa-check pr-2"></i> Set ships
+    </button>
+    <button type="button" class="btn btn-lg btn-danger"
             title="Choose a row and column to fire at, then shot by clicking here."
             disabled="@(!_fireShotButtonEnabled)">
-        <i class="fas fa-meteor pr-2"></i> Fire
+        <i class="fas fa-meteor pr-2"></i> Fire shot
     </button>
 </div>
 
-@if (_game is not null)
-{
-    <div class="pb-2">
-        <GameBoard Size="_game.BoardSize" />
-    </div>
-}
-else
+@if (_game is null)
 {
     <span>Loading game board...</span>
 }
-
-<h5>Game Log</h5>
-
-<ul class="list-group">
-    @foreach (var message in _gameLog)
-    {
-        <li class="list-group-item">@message</li>
-    }
-</ul>
+else if (_availableShips is not null)
+{
+    <CascadingValue Value="this">
+        <div class="pb-2 d-flex">
+            @foreach (var ship in _availableShips)
+            {
+                <DraggableShip Ship="ship" />
+            }
+        </div>
+        <div class="pb-2">
+            <GameBoard Size="_game.BoardSize" ShipPlaced="@OnShipPlaced" />
+        </div>
+    </CascadingValue>
+    <h5>Game Log</h5>
+    <ul class="list-group">
+        @foreach (var message in _gameLog)
+        {
+            <li class="list-group-item">@message</li>
+        }
+    </ul>
+}
