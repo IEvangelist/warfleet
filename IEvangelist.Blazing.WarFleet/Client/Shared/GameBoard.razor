@@ -18,7 +18,8 @@
     @foreach (var cell in Size.ToPositionSet())
     {
         <div class="@cell.ToString()"
-             @ondragenter="@(() => OnDragEnter(cell))">
+             @ondragenter="@(args => OnDragEnter(args, cell))"
+             @ondragleave="@(args => OnDragLeave(args, cell))">
             <svg>
                 @if (shipOccupancies is { Count: > 0 })
                 {
@@ -60,5 +61,11 @@
         }
     }
 
-    void OnDragEnter(Position cell) => ActiveGame.DraggingShipPosition = cell;
+    void OnDragEnter(DragEventArgs drag, Position cell) =>
+        ActiveGame.DraggingShipPosition = cell;
+
+    void OnDragLeave(DragEventArgs drag, Position cell)
+    {
+
+    }
 }

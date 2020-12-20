@@ -18,7 +18,6 @@
     },
     "IEvangelist.Blazing.WarFleet.Server": {
       "commandName": "Project",
-      "commandLineArgs": "RepositoryOptions:CosmosConnectionString=AccountEndpoint=https://warfleet.documents.azure.com:443/;AccountKey=qUD7PXRgGeqtdTDuhRzf3tYeLkutL9jx90eWIiiUF09Z2eK2pz500JPqaUCZ3axdjr7TJPiDlxLZP2kDDaAnwg==; RepositoryOptions:ContainerId=games RepositoryOptions:DatabaseId=warfleet",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

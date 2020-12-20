@@ -168,6 +168,12 @@ svg text {
         background: rgba(0, 0, 0, .2);
     }
 
+    .game-board.placing svg:hover {
+        border: dashed 2px green;
+        cursor: pointer;
+        background: rgba(0, 0, 0, .2);
+    }
+
 .game-board-5 {
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
