@@ -5,7 +5,7 @@ project.lock.json
 *.pyc
 nupkg/
 
-IEvangelist.Blazing.WarFleet/Server/Properties/launchSettings.json
+src/Server/Properties/launchSettings.json
 
 # Visual Studio Code
 .vscode

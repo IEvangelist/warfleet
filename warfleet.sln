@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30709.64
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Server", "IEvangelist.Blazing.WarFleet\Server\IEvangelist.Blazing.WarFleet.Server.csproj", "{A3DECA69-7C48-47A5-B2EB-D256A0E0FB5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Server", "src\Server\IEvangelist.Blazing.WarFleet.Server.csproj", "{A3DECA69-7C48-47A5-B2EB-D256A0E0FB5F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Client", "IEvangelist.Blazing.WarFleet\Client\IEvangelist.Blazing.WarFleet.Client.csproj", "{A60E10E3-5D78-4C7D-8254-2429E3E3A692}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Client", "src\Client\IEvangelist.Blazing.WarFleet.Client.csproj", "{A60E10E3-5D78-4C7D-8254-2429E3E3A692}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Shared", "IEvangelist.Blazing.WarFleet\Shared\IEvangelist.Blazing.WarFleet.Shared.csproj", "{D5E4376E-15E2-496D-A5E7-6962C4A9216F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Shared", "src\Shared\IEvangelist.Blazing.WarFleet.Shared.csproj", "{D5E4376E-15E2-496D-A5E7-6962C4A9216F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Server.Tests", "IEvangelist.Blazing.WarFleet\IEvangelist.Blazing.WarFleet.Server.Tests\IEvangelist.Blazing.WarFleet.Server.Tests.csproj", "{3139A44F-81D7-46E2-8ED4-5F4C4EE698B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Server.Tests", "test\IEvangelist.Blazing.WarFleet.Server.Tests\IEvangelist.Blazing.WarFleet.Server.Tests.csproj", "{3139A44F-81D7-46E2-8ED4-5F4C4EE698B3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Shared.Tests", "IEvangelist.Blazing.WarFleet\IEvangelist.Blazing.WarFleet.Shared.Tests\IEvangelist.Blazing.WarFleet.Shared.Tests.csproj", "{3AB4313A-12DB-4DD6-A0E5-6EF5A4709A94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Shared.Tests", "test\IEvangelist.Blazing.WarFleet.Shared.Tests\IEvangelist.Blazing.WarFleet.Shared.Tests.csproj", "{3AB4313A-12DB-4DD6-A0E5-6EF5A4709A94}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C7DEB11F-EECB-4B01-8997-62D570C82B0F}"
 EndProject
@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Client.Tests", "IEvangelist.Blazing.WarFleet\IEvangelist.Blazing.WarFleet.Client.Tests\IEvangelist.Blazing.WarFleet.Client.Tests.csproj", "{0B1B9894-E451-4AC4-83C0-9756476FA3C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IEvangelist.Blazing.WarFleet.Client.Tests", "test\IEvangelist.Blazing.WarFleet.Client.Tests\IEvangelist.Blazing.WarFleet.Client.Tests.csproj", "{0B1B9894-E451-4AC4-83C0-9756476FA3C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
