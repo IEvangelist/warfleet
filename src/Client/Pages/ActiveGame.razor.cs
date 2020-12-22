@@ -69,15 +69,14 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
 
         async Task PlacePlayerShips()
         {
-            //PlaceShips(string gameId, string playerId, IEnumerable<Ship> ships)
-            await _hubConnection.InvokeAsync("PlaceShips", GameId, _playerName, _availableShips);
+            await _hubConnection.InvokeAsync("PlaceShips", GameId, _playerName, _placedShips);
         }
 
         async Task OnShipPlaced(Ship ship) =>
             await InvokeAsync(() =>
             {
                 _placedShips.Add(ship);
-                _availableShips?.Remove(ship);
+                _availableShips?.Remove(DraggingShip);
 
                 StateHasChanged();
             });

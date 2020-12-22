@@ -13,7 +13,6 @@
 
 <div class="game-board game-board-@size"
      ondragover="event.preventDefault();"
-     ondragstart="event.dataTransfer.setData('', event.target.className);"
      @ondrop="@OnDrop">
     @foreach (var cell in Size.ToPositionSet())
     {
@@ -57,12 +56,14 @@
 
         if ((Ships ??= new()).Add(placedShip))
         {
-            await ShipPlaced.InvokeAsync(ActiveGame.DraggingShip);
+            await ShipPlaced.InvokeAsync(placedShip);
         }
     }
 
-    void OnDragEnter(DragEventArgs drag, Position cell) =>
+    void OnDragEnter(DragEventArgs drag, Position cell)
+    {
         ActiveGame.DraggingShipPosition = cell;
+    }
 
     void OnDragLeave(DragEventArgs drag, Position cell)
     {
