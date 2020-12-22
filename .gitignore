@@ -6,6 +6,7 @@ project.lock.json
 nupkg/
 
 src/Server/Properties/launchSettings.json
+src/Server/debug.log
 
 # Visual Studio Code
 .vscode
