@@ -21,7 +21,6 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
         BoardSize _boardSize;
         List<Ship> _availableShips = null!;
 
-        bool _fireShotButtonEnabled;
         bool _isNewGame;
         string _playerName = null!;
         string _playerId = null!;
@@ -42,10 +41,19 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
             _hubConnection?.State ?? HubConnectionState.Disconnected;
 
         public Ship DraggingShip { get; set; } = null!;
-
         public Position DraggingShipPosition { get; set; } = null!;
-
         public HashSet<PlayerMove> ShotsFired { get; set; } = new();
+
+        public bool IsYourBoardDisabled { get; set; } = false;
+        public bool IsTrackingBoardDisabled { get; set; } = true;
+        public bool ShipsPlaced => (_placedShips.Count, _game!.BoardSize) switch
+        {
+            (3, BoardSize.FiveByFive) => true,
+            (5, BoardSize.TenByTen) => true,
+            (10, BoardSize.TwentyByTwenty) => true,
+
+            _ =>false
+        };
 
         protected override async Task OnInitializedAsync()
         {
@@ -92,8 +100,9 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
                 StateHasChanged();
             });
 
-        async Task OnNextTurnAsync(string playerId) =>
-            await InvokeAsync(() => _fireShotButtonEnabled = _playerId == playerId);
+        async Task OnNextTurnAsync(string theNextPlayerTurnId) =>
+            await InvokeAsync(() =>
+                IsTrackingBoardDisabled = _playerId != theNextPlayerTurnId);
 
         async Task OnGameUpdatedAsync(string playerId, Game game) =>
             await InvokeAsync(() =>

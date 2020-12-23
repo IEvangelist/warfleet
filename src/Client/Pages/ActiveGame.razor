@@ -14,11 +14,11 @@
     Game - @($"{_playerName} vs. {OpponentName()}")
 </h1>
 
-@if (_availableShips is { Count: > 0 })
+@if (_availableShips is { Count: > 0 } && !ShipsPlaced)
 {
     <div class="pb-2">
         <button type="button" class="btn btn-lg btn-primary"
-                disabled="@(_availableShips?.Count() > 0)"
+                disabled="@(_availableShips is  { Count: > 0 })"
                 @onclick="@PlacePlayerShips"
                 title="Set ships">
             <i class="fas fa-check pr-2"></i> Set ships
@@ -55,12 +55,13 @@ else if (_availableShips is not null)
             <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-yours" role="tabpanel" aria-labelledby="nav-home-tab">
                     <GameBoard Size="_game.BoardSize"
-                               ShipPlaced="@OnShipPlaced" />
+                               ShipPlaced="@OnShipPlaced"
+                               IsDisabled="@IsYourBoardDisabled"/>
                 </div>
                 <div class="tab-pane fade" id="nav-tracking" role="tabpanel" aria-labelledby="nav-tracking-tab">
                     <GameBoard Size="_game.BoardSize"
                                ShotCalled="@OnShotCalled"
-                               @disabled="@(!_fireShotButtonEnabled)" />
+                               IsDisabled="@IsTrackingBoardDisabled" />
                 </div>
             </div>
 

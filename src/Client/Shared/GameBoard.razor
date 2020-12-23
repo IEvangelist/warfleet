@@ -13,6 +13,7 @@
 
 <div class="game-board game-board-@size"
      ondragover="event.preventDefault();"
+     disabled="@IsDisabled"
      @ondrop="@OnDrop">
     @foreach (var cell in Size.ToPositionSet())
     {
@@ -50,6 +51,9 @@
 
     [Parameter]
     public HashSet<Ship> Ships { get; set; } = null!;
+
+    [Parameter]
+    public bool IsDisabled { get; set; }
 
     [Parameter]
     public EventCallback<Ship> ShipPlaced { get; set; }
