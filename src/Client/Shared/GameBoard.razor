@@ -19,7 +19,7 @@
         <div class="@cell.ToString()"
              @ondragenter="@(args => OnDragEnter(args, cell))"
              @ondragleave="@(args => OnDragLeave(args, cell))">
-            <svg>
+            <svg @onclick="@(_ => CallShot(cell))">
                 @if (shipOccupancies is { Count: > 0 })
                 {
                     var (ship, occupancy) =
@@ -27,6 +27,13 @@
                     if (ship is not null)
                     {
                         <ShipPlacement Ship="ship" Cell="cell" />
+                    }
+                }
+                @{
+                    var shot = ActiveGame.ShotsFired.FirstOrDefault(shot => shot.Shot == cell);
+                    if (shot is not null)
+                    {
+                        <Shot Result="@(shot.IsHit ? ShotResult.Hit : ShotResult.Miss)" />
                     }
                 }
             </svg>
@@ -46,6 +53,9 @@
 
     [Parameter]
     public EventCallback<Ship> ShipPlaced { get; set; }
+
+    [Parameter]
+    public EventCallback<Position> ShotCalled { get; set; }
 
     async Task OnDrop(DragEventArgs drag)
     {
@@ -67,6 +77,10 @@
 
     void OnDragLeave(DragEventArgs drag, Position cell)
     {
+    }
 
+    async Task CallShot(Position cell)
+    {
+        await ShotCalled.InvokeAsync(cell);
     }
 }

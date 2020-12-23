@@ -6,21 +6,25 @@ using System;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace IEvangelist.Blazing.WarFleet.Client.Pages
 {
     public partial class ActiveGame : IAsyncDisposable
     {
         readonly List<string> _gameLog = new();
+        readonly HashSet<Ship> _placedShips = new();
 
         Game? _game;
         HubConnection? _hubConnection;
+
         BoardSize _boardSize;
+        List<Ship> _availableShips = null!;
+
         bool _fireShotButtonEnabled;
         bool _isNewGame;
         string _playerName = null!;
-        List<Ship> _availableShips = null!;
-        HashSet<Ship> _placedShips = new();
+        string _playerId = null!;
 
         [Inject]
         public ILogger<ActiveGame> Log { get; set; } = null!;
@@ -34,12 +38,14 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
         [Parameter]
         public string GameId { get; set; } = null!;
 
-        public string PlayerId { get; set; } = null!;
         public HubConnectionState ConnectionState =>
             _hubConnection?.State ?? HubConnectionState.Disconnected;
 
         public Ship DraggingShip { get; set; } = null!;
+
         public Position DraggingShipPosition { get; set; } = null!;
+
+        public HashSet<PlayerMove> ShotsFired { get; set; } = new();
 
         protected override async Task OnInitializedAsync()
         {
@@ -52,10 +58,10 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<Game>("GameUpdated", OnGameUpdatedAsync);
+            _hubConnection.On<string, Game>("GameUpdated", OnGameUpdatedAsync);
             _hubConnection.On<string>("GameLogUpdated", OnGameLogUpdatedAsync);
-            _hubConnection.On<string, Player>("PlayerJoined", OnPlayerJoinedAsync);
-            _hubConnection.On<GameResult, bool, string>("ShotFired", OnShotFiredAsync);
+            _hubConnection.On<Player>("PlayerJoined", OnPlayerJoinedAsync);
+            _hubConnection.On<GameResult, Position, bool, string>("ShotFired", OnShotFiredAsync);
             _hubConnection.On<string>("NextTurn", OnNextTurnAsync);
 
             await _hubConnection.StartAsync();
@@ -67,10 +73,8 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
             await startOrJoinGameTask;
         }
 
-        async Task PlacePlayerShips()
-        {
-            await _hubConnection.InvokeAsync("PlaceShips", GameId, _playerName, _placedShips);
-        }
+        async Task PlacePlayerShips() =>
+            await _hubConnection.InvokeAsync("PlaceShips", GameId, _playerId, _placedShips);
 
         async Task OnShipPlaced(Ship ship) =>
             await InvokeAsync(() =>
@@ -88,29 +92,41 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
                 StateHasChanged();
             });
 
-        async Task OnNextTurnAsync(string playerId)
-        {
-            await InvokeAsync(() => _fireShotButtonEnabled = PlayerId == playerId);
-        }
+        async Task OnNextTurnAsync(string playerId) =>
+            await InvokeAsync(() => _fireShotButtonEnabled = _playerId == playerId);
 
-        async Task OnGameUpdatedAsync(Game game) =>
+        async Task OnGameUpdatedAsync(string playerId, Game game) =>
             await InvokeAsync(() =>
             {
                 _game = game;
                 _availableShips = _game.BoardSize.ToShipSet();
+                _playerId = playerId;
 
                 StateHasChanged();
             });
 
-        async Task OnPlayerJoinedAsync(string gameId, Player player)
-        {
-            await Task.CompletedTask;
-        }
+        async Task OnPlayerJoinedAsync(Player player) =>
+            await InvokeAsync(() => StateHasChanged());
 
-        async Task OnShotFiredAsync(GameResult result, bool isHit, string shipName)
-        {
-            await Task.CompletedTask;
-        }
+        async Task OnShotCalled(Position shot) =>
+            await _hubConnection.InvokeAsync("CallShot", GameId, _playerId, shot);
+
+        async Task OnShotFiredAsync(GameResult result, Position shot, bool isHit, string shipName) =>
+            await InvokeAsync(() =>
+            {
+                if (_game is not null)
+                {
+                    ShotsFired.Add(new(shot, isHit));
+
+                    var (player, opponent) = _game.GetPlayerAndOpponent(_playerId);
+                    foreach (var playerShot in PlayerShots())
+                    {
+                        ShotsFired.Add(playerShot);
+                    }
+
+                    StateHasChanged();
+                }
+            });
 
         public async ValueTask DisposeAsync()
         {
@@ -121,6 +137,28 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
 
             await _hubConnection.InvokeAsync("LeaveGame", GameId);
             await _hubConnection.DisposeAsync();
+        }
+
+        string OpponentName()
+        {
+            if (_game is not null)
+            {
+                var (_, opponent) = _game.GetPlayerAndOpponent(_playerId);
+                return opponent?.Name ?? "Unknown";
+            }
+
+            return "Unknown";
+        }
+
+        HashSet<PlayerMove> PlayerShots()
+        {
+            if (_game is not null)
+            {
+                var (player, _) = _game.GetPlayerAndOpponent(_playerId);
+                return player?.ShotsFired ?? Enumerable.Empty<PlayerMove>().ToHashSet();
+            }
+
+            return Enumerable.Empty<PlayerMove>().ToHashSet();
         }
     }
 }

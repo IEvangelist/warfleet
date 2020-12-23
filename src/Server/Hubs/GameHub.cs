@@ -20,7 +20,7 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
 
             await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
 
-            await Clients.Caller.SendAsync("GameUpdated", game);
+            await Clients.Caller.SendAsync("GameUpdated", game.Game.PlayerOne.Id, game);
             await Clients.Group(gameId).SendAsync("GameLogUpdated", $"{playerName} started game ({gameId}).");
 
             await JoinableGamesUpdatedAsync();
@@ -36,11 +36,11 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
         public async ValueTask JoinGame(string gameId, string playerName)
         {
             var (game, player, joined) = await _gameHostService.TryJoinGameAsync(gameId, playerName);
-            if (joined)
+            if (joined && player is not null)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
 
-                await Clients.Caller.SendAsync("GameUpdated", game);
+                await Clients.Caller.SendAsync("GameUpdated", player.Id, game);
                 await Clients.Group(gameId).SendAsync("PlayerJoined", player);
                 await Clients.Group(gameId).SendAsync("GameLogUpdated", $"{playerName} joined game ({gameId}).");
             }
@@ -49,13 +49,13 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
         public async ValueTask PlaceShips(string gameId, string playerId, IEnumerable<Ship> ships)
         {
             var game = await _gameEngineService.PlacePlayerShipsAsync(gameId, playerId, ships);
-
             var playerAndOpponent = game.Game.GetPlayerAndOpponent(playerId);
 
-            await Clients.Group(game.Id).SendAsync(
-                "GameLogUpdated", $"{playerAndOpponent.Player.Name} has placed their ships and is ready.");
-
-            await Clients.Group(game.Id).SendAsync("GameUpdated", game);
+            if (playerAndOpponent is not { Player: null } and not { Opponent: null })
+            {
+                await Clients.Group(game.Id).SendAsync(
+                    "GameLogUpdated", $"{playerAndOpponent.Player.Name} has placed their ships and is ready.");
+            }
 
             if (game.Game.PlayersReady)
             {
@@ -70,6 +70,7 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
             var ((game, _), isHit, shipName) = shotResult;
             await Clients.Group(gameId).SendAsync("ShotFired",
                 game.Result,
+                shot,
                 isHit,
                 shipName);
 

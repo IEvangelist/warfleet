@@ -10,7 +10,8 @@
             _ => "lightgrey"
         };
     }
-    <i class="fas fa-ship pr-2" style="color: @color"></i> Game
+    <i class="fas fa-ship pr-2" style="color: @color"></i>
+    Game - @($"{_playerName} vs. {OpponentName()}")
 </h1>
 
 <div class="pb-2">
@@ -41,7 +42,9 @@ else if (_availableShips is not null)
             }
         </div>
         <div class="pb-2">
-            <GameBoard Size="_game.BoardSize" ShipPlaced="@OnShipPlaced" />
+            <GameBoard Size="_game.BoardSize"
+                       ShipPlaced="@OnShipPlaced"
+                       ShotCalled="@OnShotCalled" />
         </div>
     </CascadingValue>
     <h5>Game Log</h5>
