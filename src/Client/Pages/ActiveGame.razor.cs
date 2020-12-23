@@ -111,7 +111,8 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
         async Task OnShotCalled(Position shot) =>
             await _hubConnection.InvokeAsync("CallShot", GameId, _playerId, shot);
 
-        async Task OnShotFiredAsync(GameResult result, Position shot, bool isHit, string shipName) =>
+        async Task OnShotFiredAsync(
+            GameResult result, Position shot, bool isHit, string shipName) =>
             await InvokeAsync(() =>
             {
                 if (_game is not null)
