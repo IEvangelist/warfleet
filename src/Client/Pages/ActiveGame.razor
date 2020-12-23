@@ -14,19 +14,17 @@
     Game - @($"{_playerName} vs. {OpponentName()}")
 </h1>
 
-<div class="pb-2">
-    <button type="button" class="btn btn-lg btn-primary"
-            disabled="@(_availableShips?.Count() > 0)"
-            @onclick="@PlacePlayerShips"
-            title="Set ships">
-        <i class="fas fa-check pr-2"></i> Set ships
-    </button>
-    <button type="button" class="btn btn-lg btn-danger"
-            title="Choose a row and column to fire at, then shot by clicking here."
-            disabled="@(!_fireShotButtonEnabled)">
-        <i class="fas fa-meteor pr-2"></i> Fire shot
-    </button>
-</div>
+@if (_availableShips is { Count: > 0 })
+{
+    <div class="pb-2">
+        <button type="button" class="btn btn-lg btn-primary"
+                disabled="@(_availableShips?.Count() > 0)"
+                @onclick="@PlacePlayerShips"
+                title="Set ships">
+            <i class="fas fa-check pr-2"></i> Set ships
+        </button>
+    </div>
+}
 
 @if (_game is null)
 {
@@ -42,9 +40,31 @@ else if (_availableShips is not null)
             }
         </div>
         <div class="pb-2">
-            <GameBoard Size="_game.BoardSize"
-                       ShipPlaced="@OnShipPlaced"
-                       ShotCalled="@OnShotCalled" />
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <a class="nav-item nav-link active" id="nav-yours-tab" data-toggle="tab"
+                       href="#nav-yours" role="tab" aria-controls="nav-home" aria-selected="true">
+                        <i class="fas fa-user-secret pr-2"></i> Your Board
+                    </a>
+                    <a class="nav-item nav-link" id="nav-tracking-tab" data-toggle="tab"
+                       href="#nav-tracking" role="tab" aria-controls="nav-tracking" aria-selected="false">
+                        <i class="fas fa-binoculars pr-2"></i> Tracking Board
+                    </a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade show active" id="nav-yours" role="tabpanel" aria-labelledby="nav-home-tab">
+                    <GameBoard Size="_game.BoardSize"
+                               ShipPlaced="@OnShipPlaced" />
+                </div>
+                <div class="tab-pane fade" id="nav-tracking" role="tabpanel" aria-labelledby="nav-tracking-tab">
+                    <GameBoard Size="_game.BoardSize"
+                               ShotCalled="@OnShotCalled"
+                               @disabled="@(!_fireShotButtonEnabled)" />
+                </div>
+            </div>
+
+            
         </div>
     </CascadingValue>
     <h5>Game Log</h5>

@@ -21,12 +21,17 @@ namespace IEvangelist.Blazing.WarFleet
             var serverGame = await _gameRepository.GetAsync(gameId);
             var game = serverGame.Game;
             var (player, opponent) = game.GetPlayerAndOpponent(playerId);
+            if (player is null && opponent is null)
+            {
+                return new(serverGame, false, null);
+            }
+
             var (shipName, _) =
-                opponent.ShipPlacement
+                opponent!.ShipPlacement
                         .Select(ship => (ship.Name, Occupancy: ship.GetShipOccupancy()))
                         .FirstOrDefault(ship => ship.Occupancy.Contains(shotPlacement));
             var isHit = shipName is { Length: > 0 };
-            player.ShotsFired.Add(new(shotPlacement, isHit));
+            player!.ShotsFired.Add(new(shotPlacement, isHit));
 
             var hasWonGame = player.HasWonGame(opponent.ShipPlacement);
             var gameResult = hasWonGame
@@ -41,7 +46,7 @@ namespace IEvangelist.Blazing.WarFleet
                 serverGame.Ended = DateTime.UtcNow;
             }
 
-            return new PlayerShotResult(
+            return new(
                 await _gameRepository.UpdateAsync(serverGame),
                 isHit,
                 shipName);

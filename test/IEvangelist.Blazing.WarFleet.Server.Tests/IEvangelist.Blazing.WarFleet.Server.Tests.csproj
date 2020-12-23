@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Server\IEvangelist.Blazing.WarFleet.Server.csproj" />
+    <ProjectReference Include="..\..\src\Server\IEvangelist.Blazing.WarFleet.Server.csproj" />
   </ItemGroup>
 
 </Project>

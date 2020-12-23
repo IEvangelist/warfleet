@@ -117,12 +117,12 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
             {
                 if (_game is not null)
                 {
-                    ShotsFired.Add(new(shot, isHit));
+                    _ = ShotsFired.Add(new(shot, isHit));
 
-                    var (player, opponent) = _game.GetPlayerAndOpponent(_playerId);
-                    foreach (var playerShot in PlayerShots())
+                    var (player, _) = _game.GetPlayerAndOpponent(_playerId);
+                    foreach (var playerShot in player?.ShotsFired ?? Enumerable.Empty<PlayerMove>().ToHashSet())
                     {
-                        ShotsFired.Add(playerShot);
+                        _ = ShotsFired.Add(playerShot);
                     }
 
                     StateHasChanged();
@@ -149,17 +149,6 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
             }
 
             return "Unknown";
-        }
-
-        HashSet<PlayerMove> PlayerShots()
-        {
-            if (_game is not null)
-            {
-                var (player, _) = _game.GetPlayerAndOpponent(_playerId);
-                return player?.ShotsFired ?? Enumerable.Empty<PlayerMove>().ToHashSet();
-            }
-
-            return Enumerable.Empty<PlayerMove>().ToHashSet();
         }
     }
 }

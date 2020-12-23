@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using System;
 using Xunit;
 
 namespace IEvangelist.Blazing.WarFleet.Client.Extensions.Tests
@@ -8,7 +9,7 @@ namespace IEvangelist.Blazing.WarFleet.Client.Extensions.Tests
         [Fact]
         public void TryGetQueryStringTest()
         {
-            var navManager = new TestNavigationManager("link?str=val&num=19&dec=7.7&foo=2");
+            TestNavigationManager navManager = new();
 
             static void CorrectlyParsesQueryString<T>(
                 NavigationManager nav,
@@ -32,12 +33,20 @@ namespace IEvangelist.Blazing.WarFleet.Client.Extensions.Tests
 
     public class TestNavigationManager : NavigationManager
     {
-        public TestNavigationManager(string uri)
-        {
-            BaseUri = "https://example.com";
-            Uri = uri;
+        readonly string _baseUri = null!;
+        readonly string _uri = null!;
 
-            EnsureInitialized();
+        public TestNavigationManager(
+            string baseUri = "http://example.com/",
+            string uri = "http://example.com/link?str=val&num=19&dec=7.7&foo=2") =>
+            (_baseUri, _uri) = (new Uri(baseUri).ToString(), uri);
+
+        protected override void EnsureInitialized()
+        {
+            if (_baseUri is { Length: > 0 } && _uri is { Length: > 0 })
+            {
+                Initialize(_baseUri, _uri);
+            }
         }
 
         protected override void NavigateToCore(string uri, bool forceLoad) =>
