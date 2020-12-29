@@ -11,11 +11,15 @@
         };
     }
     <i class="fas fa-ship pr-2" style="color: @color"></i>
-    Game - @($"{_playerName} vs. {OpponentName()}")
+    Game - @($"{_playerName} vs. {_opponentName}")
 </h1>
 
-@if (_availableShips is { Count: > 0 } && !ShipsPlaced)
-{
+@{
+    var cssClass =
+        _availableShips is { Count: > 0 } && !ShipsPlaced && _userClickedSetShips
+            ? "visible"
+            : "invisible";
+
     <div class="pb-2">
         <button type="button" class="btn btn-lg btn-primary"
                 disabled="@(_availableShips is  { Count: > 0 })"

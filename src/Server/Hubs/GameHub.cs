@@ -1,4 +1,5 @@
 ﻿using IEvangelist.Blazing.WarFleet.Server.Extensions;
+using IEvangelist.Blazing.WarFleet.Shared;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace IEvangelist.Blazing.WarFleet.Server.Hubs
 {
-    public class GameHub : Hub
+    public class GameHub : Hub<IGameHubClient>
     {
         readonly GameEngineService _gameEngineService;
         readonly GameHostService _gameHostService;
@@ -16,12 +17,12 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
 
         public async ValueTask StartGame(string gameId, BoardSize size, string playerName)
         {
-            var game = await _gameHostService.StartGameAsync(gameId, size, playerName);
+            var serverGame = await _gameHostService.StartGameAsync(gameId, size, playerName);
 
             await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
 
-            await Clients.Caller.SendAsync("GameUpdated", game.Game.PlayerOne.Id, game);
-            await Clients.Group(gameId).SendAsync("GameLogUpdated", $"{playerName} started game ({gameId}).");
+            await Clients.Caller.GameUpdated(serverGame.Game.PlayerOne.Id, serverGame.Game);
+            await Clients.Group(gameId).GameLogUpdated($"{playerName} started game ({gameId}).");
 
             await JoinableGamesUpdatedAsync();
         }
@@ -29,63 +30,76 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
         async Task JoinableGamesUpdatedAsync()
         {
             var serverGames = await _gameHostService.GetJoinableGamesAsync();
-            await Clients.All.SendAsync(
-                "JoinableGamesUpdated", serverGames.OrderBy(sg => sg.Started).ToDictionary(sg => sg.Id, sg => sg.Game));
+            await Clients.All.JoinableGamesUpdated(
+                serverGames.OrderBy(sg => sg.Started).ToDictionary(sg => sg.Id, sg => sg.Game));
         }
 
         public async ValueTask JoinGame(string gameId, string playerName)
         {
-            var (game, player, joined) = await _gameHostService.TryJoinGameAsync(gameId, playerName);
+            var (serverGame, player, joined) = await _gameHostService.TryJoinGameAsync(gameId, playerName);
             if (joined && player is not null)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
 
-                await Clients.Caller.SendAsync("GameUpdated", player.Id, game);
-                await Clients.Group(gameId).SendAsync("PlayerJoined", player);
-                await Clients.Group(gameId).SendAsync("GameLogUpdated", $"{playerName} joined game ({gameId}).");
+                await Clients.Caller.GameUpdated(player.Id, serverGame.Game);
+                await Clients.Group(gameId).PlayerJoined(player);
+                await Clients.Group(gameId).GameLogUpdated($"{playerName} joined game ({gameId}).");
             }
         }
 
         public async ValueTask PlaceShips(string gameId, string playerId, IEnumerable<Ship> ships)
         {
-            var game = await _gameEngineService.PlacePlayerShipsAsync(gameId, playerId, ships);
-            var playerAndOpponent = game.Game.GetPlayerAndOpponent(playerId);
+            var serverGame = await _gameEngineService.PlacePlayerShipsAsync(gameId, playerId, ships);
+            var playerAndOpponent = serverGame.Game.GetPlayerAndOpponent(playerId);
 
             if (playerAndOpponent is not { Player: null } and not { Opponent: null })
             {
-                await Clients.Group(game.Id).SendAsync(
-                    "GameLogUpdated", $"{playerAndOpponent.Player.Name} has placed their ships and is ready.");
-            }
+                await Clients.Group(serverGame.Id).GameLogUpdated(
+                    $"{playerAndOpponent.Player.Name} has placed their ships and is ready.");
 
-            if (game.Game.PlayersReady)
-            {
-                var playerToStart = playerAndOpponent.Random();
-                await Clients.Group(gameId).SendAsync("NextTurn", playerToStart.Id);
+                if (serverGame.Game.PlayersReady)
+                {
+                    var playerToStart = playerAndOpponent.Random();
+                    if (playerToStart is not null)
+                    {
+                        await Clients.Group(gameId).NextTurn(playerToStart.Id);
+                        await Clients.Group(gameId).GameLogUpdated(
+                            $"{playerToStart.Name} goes first.");
+                    }
+                }
             }
         }
 
         public async ValueTask CallShot(string gameId, string playerId, Position shot)
         {
             var shotResult = await _gameEngineService.ProcessPlayerShotAsync(gameId, playerId, shot);
-            var ((game, _), isHit, shipName) = shotResult;
-            await Clients.Group(gameId).SendAsync("ShotFired",
+            var ((game, _), isSunk, isHit, shipName) = shotResult;
+            await Clients.Group(gameId).ShotFired(new(
                 game.Result,
+                playerId,
                 shot,
                 isHit,
-                shipName);
+                isSunk,
+                shipName));
 
             var (player, opponent) = game.GetPlayerAndOpponent(playerId);
-            await Clients.Group(gameId).SendAsync(
-                "GameLogUpdated", $"{player.Name} fires on {shot}.{(isHit ? $"Hitting {opponent.Name} {shipName}!" : "Miss!")}");
+            if (player is not null && opponent is not null)
+            {
+                var isHitMessage = isHit ? $"Hitting {opponent.Name} {shipName}!" : "Miss!";
+                var isSunkMessage = isSunk ? $"{player.Name} sunk {opponent.Name}'s {shipName}." : "";
 
-            if (game.Result.IsWinningResult())
-            {
-                await Clients.Group(gameId).SendAsync("GameLogUpdated", $"{player.Name} wins!");
-                await LeaveGame(gameId);
-            }
-            else
-            {
-                await Clients.Group(gameId).SendAsync("NextTurn", opponent.Id);
+                await Clients.Group(gameId).GameLogUpdated(
+                    $"{player.Name} fires on {shot}. {isHitMessage} {isSunkMessage}");
+
+                if (game.Result.IsWinningResult())
+                {
+                    await Clients.Group(gameId).GameLogUpdated($"{player.Name} wins!");
+                    await LeaveGame(gameId);
+                }
+                else
+                {
+                    await Clients.Group(gameId).NextTurn(opponent.Id);
+                }
             }
         }
 
