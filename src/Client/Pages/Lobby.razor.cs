@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using IEvangelist.Blazing.WarFleet.Client.Extensions;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System;
 using System.Collections.Generic;
@@ -34,10 +35,8 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
                 .WithAutomaticReconnect()
                 .Build();
 
-            _hubConnection.On<IDictionary<string, Game>>(
-                "JoinableGamesUpdated", OnJoinableGamesUpdatedAsync);
-
-            await _hubConnection.StartAsync();
+            await _hubConnection.OnJoinableGamesUpdated(OnJoinableGamesUpdatedAsync)
+                .StartAsync();
         }
 
         async Task OnJoinableGamesUpdatedAsync(IDictionary<string, Game> games) =>

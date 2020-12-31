@@ -60,9 +60,9 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            NavigationManager.TryGetQueryString("newGame", out _isNewGame);
-            NavigationManager.TryGetQueryString("playerName", out _playerName);
-            NavigationManager.TryGetQueryString("boardSize", out _boardSize);
+            _ = NavigationManager.TryGetQueryString("newGame", out _isNewGame);
+            _ = NavigationManager.TryGetQueryString("playerName", out _playerName);
+            _ = NavigationManager.TryGetQueryString("boardSize", out _boardSize);
 
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl(NavigationManager.ToAbsoluteUri("/gamehub"))
@@ -76,17 +76,15 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
                 .OnNextTurn(OnNextTurnAsync)
                 .StartAsync();
 
-            var startOrJoinGameTask = _isNewGame
-                ? _hubConnection.InvokeAsync("StartGame", GameId, _boardSize, _playerName)
-                : _hubConnection.InvokeAsync("JoinGame", GameId, _playerName);
-
-            await startOrJoinGameTask;
+            await (_isNewGame
+                ? _hubConnection.StartGame(GameId, _boardSize, _playerName)
+                : _hubConnection.JoinGame(GameId, _playerName));
         }
 
         async Task PlacePlayerShips()
         {
             _userClickedSetShips = true;
-            await _hubConnection.InvokeAsync("PlaceShips", GameId, _playerId, _placedShips);
+            await _hubConnection!.PlaceShips(GameId, _playerId, _placedShips);
         }
 
         async Task OnShipPlaced(Ship ship) =>
@@ -128,14 +126,14 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
         async Task OnPlayerJoinedAsync(Player player) =>
             await InvokeAsync(() => StateHasChanged());
 
-        async Task OnShotCalled(Position shot) =>
-            await _hubConnection.InvokeAsync("CallShot", GameId, _playerId, shot);
+        async Task OnCallShot(Position shot) =>
+            await _hubConnection!.CallShot(GameId, _playerId, shot);
 
         async Task OnShotFiredAsync(
             PlayerShot calledShot) =>
             await InvokeAsync(() =>
             {
-                if (_game is not null)
+                if (_game is not null && calledShot.PlayerId == _playerId)
                 {
                     _ = ShotsFired.Add(new(calledShot.Shot, calledShot.IsHit));
 
@@ -156,7 +154,7 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
                 return;
             }
 
-            await _hubConnection.InvokeAsync("LeaveGame", GameId);
+            await _hubConnection.LeaveGame(GameId);
             await _hubConnection.DisposeAsync();
         }
     }

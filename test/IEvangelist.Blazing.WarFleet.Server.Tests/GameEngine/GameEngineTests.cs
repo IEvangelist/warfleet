@@ -93,8 +93,8 @@ namespace IEvangelist.Blazing.WarFleet.Tests
     {
         public TestGame(HashSet<Ship> playerOneShips, HashSet<Ship> playerTwoShips) => Game = new()
         {
-            PlayerOne = new("Player 1") { ShipPlacement = playerOneShips },
-            PlayerTwo = new("Player 2") { ShipPlacement = playerTwoShips }
+            PlayerOne = new("Player 1") { Ships = playerOneShips },
+            PlayerTwo = new("Player 2") { Ships = playerTwoShips }
         };
     }
 }

@@ -11,9 +11,9 @@ namespace IEvangelist.Blazing.WarFleet
 
         public HashSet<PlayerMove> ShotsFired { get; init; } = new();
 
-        public HashSet<Ship> ShipPlacement { get; init; } = new();
+        public HashSet<Ship> Ships { get; init; } = new();
 
-        public bool ShipsPlaced => ShipPlacement.Any();
+        public bool ShipsPlaced => Ships.Any();
 
         public static implicit operator Player(string playerName) =>
             new(playerName);

@@ -32,7 +32,8 @@
 
 @if (_game is null)
 {
-    <span>Loading game board...</span>
+    <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
+    <h5>Loading game board...</h5>
 }
 else if (_availableShips is not null)
 {
@@ -60,23 +61,34 @@ else if (_availableShips is not null)
                 <div class="tab-pane fade show active" id="nav-yours" role="tabpanel" aria-labelledby="nav-home-tab">
                     <GameBoard Size="_game.BoardSize"
                                ShipPlaced="@OnShipPlaced"
-                               IsDisabled="@IsYourBoardDisabled"/>
+                               IsDisabled="@IsYourBoardDisabled" />
                 </div>
                 <div class="tab-pane fade" id="nav-tracking" role="tabpanel" aria-labelledby="nav-tracking-tab">
                     <GameBoard Size="_game.BoardSize"
-                               ShotCalled="@OnShotCalled"
+                               ShotCalled="@OnCallShot"
+                               IsTrackingBoard="true"
                                IsDisabled="@IsTrackingBoardDisabled" />
                 </div>
             </div>
 
-            
+
         </div>
     </CascadingValue>
-    <h5>Game Log</h5>
-    <ul class="list-group">
-        @foreach (var message in _gameLog)
-        {
-            <li class="list-group-item">@message</li>
-        }
-    </ul>
+
+    <p>
+        <button class="btn btn-secondary" type="button" data-toggle="collapse"
+                data-target="#collapse" aria-expanded="false" aria-controls="collapse">
+            Game Log
+        </button>
+    </p>
+    <div class="collapse" id="collapse">
+        <div class="card card-body">
+            <ul class="list-group">
+                @foreach (var message in _gameLog)
+                {
+                    <li class="list-group-item">@message</li>
+                }
+            </ul>
+        </div>
+    </div>
 }

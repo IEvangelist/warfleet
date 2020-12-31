@@ -31,12 +31,15 @@
                     }
                 }
                 @{
-                    var shot = ActiveGame.ShotsFired.FirstOrDefault(shot => shot.Shot == cell);
-                    if (shot is not null)
+                    if (IsTrackingBoard)
                     {
+                        var shot = ActiveGame.ShotsFired.FirstOrDefault(shot => shot.Shot == cell);
+                        if (shot is not null)
+                        {
                         <Shot Result="@(shot.IsHit ? ShotResult.Hit : ShotResult.Miss)" />
+                            }
+                        }
                     }
-                }
             </svg>
         </div>
     }
@@ -51,6 +54,9 @@
 
     [Parameter]
     public HashSet<Ship> Ships { get; set; } = null!;
+
+    [Parameter]
+    public bool IsTrackingBoard { get; set; }
 
     [Parameter]
     public bool IsDisabled { get; set; }
@@ -85,6 +91,9 @@
 
     async Task CallShot(Position cell)
     {
-        await ShotCalled.InvokeAsync(cell);
+        if (IsTrackingBoard)
+        {
+            await ShotCalled.InvokeAsync(cell);
+        }
     }
 }

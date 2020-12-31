@@ -73,7 +73,7 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
         public async ValueTask CallShot(string gameId, string playerId, Position shot)
         {
             var shotResult = await _gameEngineService.ProcessPlayerShotAsync(gameId, playerId, shot);
-            var ((game, _), isSunk, isHit, shipName) = shotResult;
+            var ((game, _), isHit, isSunk, shipName) = shotResult;
             await Clients.Group(gameId).ShotFired(new(
                 game.Result,
                 playerId,
@@ -94,7 +94,6 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
                 if (game.Result.IsWinningResult())
                 {
                     await Clients.Group(gameId).GameLogUpdated($"{player.Name} wins!");
-                    await LeaveGame(gameId);
                 }
                 else
                 {

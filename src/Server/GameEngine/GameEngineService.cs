@@ -21,20 +21,28 @@ namespace IEvangelist.Blazing.WarFleet
             var serverGame = await _gameRepository.GetAsync(gameId);
             var game = serverGame.Game;
             var (player, opponent) = game.GetPlayerAndOpponent(playerId);
-            if (player is null && opponent is null)
+            if (player is null || opponent is null)
             {
                 return new(serverGame, false, false, null);
             }
 
-            var (shipName, _) =
-                opponent!.ShipPlacement
-                        .Select(ship => (ship.Name, Occupancy: ship.GetShipOccupancy()))
-                        .FirstOrDefault(ship => ship.Occupancy.Contains(shotPlacement));
-            var isHit = shipName is { Length: > 0 };
-            var isSunk = false;
-            player!.ShotsFired.Add(new(shotPlacement, isHit));
+            var shipOccupancies =
+                opponent.Ships
+                        .Select(ship => (ship.Name, ship.Size, Occupancy: ship.GetShipOccupancy()));
 
-            var hasWonGame = player.HasWonGame(opponent.ShipPlacement);
+            var (shipName, _, _) =
+                shipOccupancies
+                    .FirstOrDefault(ship => ship.Occupancy.Contains(shotPlacement));
+
+            var isHit = shipName is { Length: > 0 };
+            player.ShotsFired.Add(new(shotPlacement, isHit));
+            var playerHits = player.ShotsFired.Where(shot => shot.IsHit).Select(shot => shot.Shot);
+            var isSunk = isHit
+                && shipOccupancies.Where(ship => ship.Name == shipName)
+                    .SelectMany(ship => ship.Occupancy)
+                    .All(shot => playerHits is not null && playerHits.Contains(shot));
+
+            var hasWonGame = player.HasWonGame(opponent.Ships);
             var gameResult = hasWonGame
                 ? player.Id == game.PlayerOne.Id
                     ? GameResult.PlayerOneWins
@@ -50,7 +58,7 @@ namespace IEvangelist.Blazing.WarFleet
             return new(
                 await _gameRepository.UpdateAsync(serverGame),
                 isHit,
-                isSunk, 
+                isSunk,
                 shipName);
         }
 
@@ -64,7 +72,7 @@ namespace IEvangelist.Blazing.WarFleet
             var (player, _) = game.GetPlayerAndOpponent(playerId);
             if (player is not null)
             {
-                ships.ForEach(ship => player.ShipPlacement.Add(ship));
+                ships.ForEach(ship => player.Ships.Add(ship));
             }
 
             return await _gameRepository.UpdateAsync(serverGame);
