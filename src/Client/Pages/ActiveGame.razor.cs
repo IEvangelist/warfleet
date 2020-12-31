@@ -117,6 +117,7 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
                 _game = game;
                 _availableShips = _game.BoardSize.ToShipSet();
                 _playerId = playerId;
+
                 var (_, opponent) = _game.GetPlayerAndOpponent(_playerId);
                 _opponentName = opponent?.Name ?? "(Waiting for opponent)";
 
@@ -124,7 +125,15 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
             });
 
         async Task OnPlayerJoinedAsync(Player player) =>
-            await InvokeAsync(() => StateHasChanged());
+            await InvokeAsync(() =>
+            {
+                if (player is not null && _opponentName is { Length: 0 })
+                {
+                    _opponentName = player.Name;
+
+                    StateHasChanged();
+                }
+            });
 
         async Task OnCallShot(Position shot) =>
             await _hubConnection!.CallShot(GameId, _playerId, shot);
@@ -156,6 +165,8 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
 
             await _hubConnection.LeaveGame(GameId);
             await _hubConnection.DisposeAsync();
+            
+            _hubConnection = null;
         }
     }
 }

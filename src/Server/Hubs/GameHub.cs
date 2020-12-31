@@ -87,10 +87,6 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
             {
                 var isHitMessage = isHit ? $"Hitting {opponent.Name} {shipName}!" : "Miss!";
                 var isSunkMessage = isSunk ? $"{player.Name} sunk {opponent.Name}'s {shipName}." : "";
-
-                await Clients.Group(gameId).GameLogUpdated(
-                    $"{player.Name} fires on {shot}. {isHitMessage} {isSunkMessage}");
-
                 if (game.Result.IsWinningResult())
                 {
                     await Clients.Group(gameId).GameLogUpdated($"{player.Name} wins!");
@@ -99,6 +95,9 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
                 {
                     await Clients.Group(gameId).NextTurn(opponent.Id);
                 }
+
+                await Clients.Group(gameId).GameLogUpdated(
+                    $"{player.Name} fires on {shot}. {isHitMessage} {isSunkMessage}");
             }
         }
 
