@@ -17,8 +17,8 @@
 @{
     var cssClass =
         _availableShips is { Count: > 0 } && !ShipsPlaced && _userClickedSetShips
-            ? "visible"
-            : "invisible";
+            ? "d-inline"
+            : "d-none";
 
     <div class="pb-2">
         <button type="button" class="btn btn-lg btn-primary"
@@ -32,8 +32,8 @@
 
 @if (_game is null)
 {
-    <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
-    <h5>Loading game board...</h5>
+    <i class="fa fa-cog fa-spin fa-2x fa-fw pr-2"></i>
+    <span class="display-4">Loading game board...</span>
 }
 else if (_availableShips is not null)
 {
@@ -70,8 +70,6 @@ else if (_availableShips is not null)
                                IsDisabled="@IsTrackingBoardDisabled" />
                 </div>
             </div>
-
-
         </div>
     </CascadingValue>
 
@@ -84,9 +82,9 @@ else if (_availableShips is not null)
     <div class="collapse" id="collapse">
         <div class="card card-body">
             <ul class="list-group">
-                @foreach (var message in _gameLog)
+                @for (int i = _gameLog.Count; i-- > 0;)
                 {
-                    <li class="list-group-item">@message</li>
+                    <li class="list-group-item">@_gameLog[i]</li>
                 }
             </ul>
         </div>

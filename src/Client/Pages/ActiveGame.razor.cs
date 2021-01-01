@@ -17,11 +17,9 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
         readonly HashSet<Ship> _placedShips = new();
 
         Game? _game;
-        HubConnection? _hubConnection;
-
+        HubConnection? _serverConnection;
         BoardSize _boardSize;
         List<Ship> _availableShips = null!;
-
         bool _userClickedSetShips = false;
         bool _isNewGame;
         string _opponentName = null!;
@@ -41,7 +39,7 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
         public string GameId { get; set; } = null!;
 
         public HubConnectionState ConnectionState =>
-            _hubConnection?.State ?? HubConnectionState.Disconnected;
+            _serverConnection?.State ?? HubConnectionState.Disconnected;
 
         public Ship DraggingShip { get; set; } = null!;
         public Position DraggingShipPosition { get; set; } = null!;
@@ -64,12 +62,12 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
             _ = NavigationManager.TryGetQueryString("playerName", out _playerName);
             _ = NavigationManager.TryGetQueryString("boardSize", out _boardSize);
 
-            _hubConnection = new HubConnectionBuilder()
+            _serverConnection = new HubConnectionBuilder()
                 .WithUrl(NavigationManager.ToAbsoluteUri("/gamehub"))
                 .WithAutomaticReconnect()
                 .Build();
 
-            await _hubConnection.OnGameUpdated(OnGameUpdatedAsync)
+            await _serverConnection.OnGameUpdated(OnGameUpdatedAsync)
                 .OnGameLogUpdated(OnGameLogUpdatedAsync)
                 .OnPlayerJoined(OnPlayerJoinedAsync)
                 .OnShotFired(OnShotFiredAsync)
@@ -77,14 +75,14 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
                 .StartAsync();
 
             await (_isNewGame
-                ? _hubConnection.StartGame(GameId, _boardSize, _playerName)
-                : _hubConnection.JoinGame(GameId, _playerName));
+                ? _serverConnection.StartGame(GameId, _boardSize, _playerName)
+                : _serverConnection.JoinGame(GameId, _playerName));
         }
 
         async Task PlacePlayerShips()
         {
             _userClickedSetShips = true;
-            await _hubConnection!.PlaceShips(GameId, _playerId, _placedShips);
+            await _serverConnection!.PlaceShips(GameId, _playerId, _placedShips);
         }
 
         async Task OnShipPlaced(Ship ship) =>
@@ -100,13 +98,15 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
             await InvokeAsync(() =>
             {
                 _gameLog.Add(message);
+
                 StateHasChanged();
             });
 
-        async Task OnNextTurnAsync(string theNextPlayerTurnId) =>
+        async Task OnNextTurnAsync(string nextPlayerId) =>
             await InvokeAsync(() =>
             {
-                IsTrackingBoardDisabled = _playerId != theNextPlayerTurnId;
+                IsYourBoardDisabled = true;
+                IsTrackingBoardDisabled = _playerId != nextPlayerId;
 
                 StateHasChanged();
             });
@@ -127,7 +127,7 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
         async Task OnPlayerJoinedAsync(Player player) =>
             await InvokeAsync(() =>
             {
-                if (player is not null && _opponentName is { Length: 0 })
+                if (player is not null)
                 {
                     _opponentName = player.Name;
 
@@ -136,7 +136,7 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
             });
 
         async Task OnCallShot(Position shot) =>
-            await _hubConnection!.CallShot(GameId, _playerId, shot);
+            await _serverConnection!.CallShot(GameId, _playerId, shot);
 
         async Task OnShotFiredAsync(
             PlayerShot calledShot) =>
@@ -158,15 +158,15 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
 
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
-            if (_hubConnection is null)
+            if (_serverConnection is null)
             {
                 return;
             }
 
-            await _hubConnection.LeaveGame(GameId);
-            await _hubConnection.DisposeAsync();
+            await _serverConnection.LeaveGame(GameId);
+            await _serverConnection.DisposeAsync();
             
-            _hubConnection = null;
+            _serverConnection = null;
         }
     }
 }

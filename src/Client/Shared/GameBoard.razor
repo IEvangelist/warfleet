@@ -11,7 +11,7 @@
                  .ToDictionary(t => t.Ship, t => t.Occupancy);
 }
 
-<div class="game-board game-board-@size"
+<div class="game-board game-board-@size @($"{(IsDisabled ? "disabled" : "")}")"
      ondragover="event.preventDefault();"
      disabled="@IsDisabled"
      @ondrop="@OnDrop">

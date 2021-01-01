@@ -158,12 +158,12 @@ svg text {
         width: 60px;
     }
 
-    .game-board:not(:disabled) svg:hover {
+    .game-board:not(:disabled):not(.disabled) svg:hover {
         border: 2px dashed royalblue;
         cursor: pointer;
     }
 
-    .game-board:disabled:hover {
+    .game-board.disabled:disabled:hover {
         cursor: not-allowed;
     }
 

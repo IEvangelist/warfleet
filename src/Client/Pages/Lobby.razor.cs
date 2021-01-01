@@ -11,7 +11,8 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
 {
     public partial class Lobby : IAsyncDisposable
     {
-        HubConnection? _hubConnection;
+        HubConnection? _serverConnection;
+        IDictionary<string, Game>? _joinableGames = null!;
 
         [Inject]
         public NavigationManager NavigationManager { get; set; } = null!;
@@ -21,52 +22,51 @@ namespace IEvangelist.Blazing.WarFleet.Client.Pages
 
         public bool HasValidName => PlayerName is { Length: >= 3 };
         public string PlayerName { get; set; } = null!;
-        public IDictionary<string, Game>? JoinableGames { get; set; } = null!;
+        
         public HubConnectionState ConnectionState =>
-            _hubConnection?.State ?? HubConnectionState.Disconnected;
+            _serverConnection?.State ?? HubConnectionState.Disconnected;
 
         protected override async Task OnInitializedAsync()
         {
-            JoinableGames =
+            _joinableGames =
                 await Http.GetFromJsonAsync<IDictionary<string, Game>>("api/games/joinable");
 
-            _hubConnection = new HubConnectionBuilder()
+            _serverConnection = new HubConnectionBuilder()
                 .WithUrl(NavigationManager.ToAbsoluteUri("/gamehub"))
                 .WithAutomaticReconnect()
                 .Build();
 
-            await _hubConnection.OnJoinableGamesUpdated(OnJoinableGamesUpdatedAsync)
+            await _serverConnection.OnJoinableGamesUpdated(OnJoinableGamesUpdatedAsync)
                 .StartAsync();
         }
 
         async Task OnJoinableGamesUpdatedAsync(IDictionary<string, Game> games) =>
             await InvokeAsync(() =>
             {
-                JoinableGames = games;
+                _joinableGames = games;
+
                 StateHasChanged();
             });
 
-        public void StartGame(BoardSize size)
+        public void StartGame(BoardSize size) =>
+            TryNavigateTo(
+                $"game/{Guid.NewGuid()}?newGame=true&playerName={PlayerName}&boardSize={size}");
+
+        public void TryJoinGame(string gameId) =>
+            TryNavigateTo(
+                $"game/{gameId}?playerName={PlayerName}");
+
+        void TryNavigateTo(string route)
         {
             if (PlayerName is not { Length: >= 3 })
             {
                 return;
             }
 
-            NavigationManager.NavigateTo($"game/{Guid.NewGuid()}?newGame=true&playerName={PlayerName}&boardSize={size}");
-        }
-
-        public void TryJoinGame(string gameId)
-        {
-            if (PlayerName is not { Length: >= 3 })
-            {
-                return;
-            }
-
-            NavigationManager.NavigateTo($"game/{gameId}?playerName={PlayerName}");
+            NavigationManager.NavigateTo(route);
         }
 
         public async ValueTask DisposeAsync()
-            => await (_hubConnection?.DisposeAsync() ?? new ValueTask());
+            => await (_serverConnection?.DisposeAsync() ?? new ValueTask());
     }
 }

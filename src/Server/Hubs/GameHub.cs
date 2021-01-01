@@ -42,7 +42,7 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
                 await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
 
                 await Clients.Caller.GameUpdated(player.Id, serverGame.Game);
-                await Clients.Group(gameId).PlayerJoined(player);
+                await Clients.OthersInGroup(gameId).PlayerJoined(player);
                 await Clients.Group(gameId).GameLogUpdated($"{playerName} joined game ({gameId}).");
             }
         }
@@ -55,7 +55,7 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
             if (playerAndOpponent is not { Player: null } and not { Opponent: null })
             {
                 await Clients.Group(serverGame.Id).GameLogUpdated(
-                    $"{playerAndOpponent.Player.Name} has placed their ships and is ready.");
+                    $"{playerAndOpponent.Player.Name} has placed their ships and is ready to play.");
 
                 if (serverGame.Game.PlayersReady)
                 {
@@ -85,8 +85,10 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
             var (player, opponent) = game.GetPlayerAndOpponent(playerId);
             if (player is not null && opponent is not null)
             {
-                var isHitMessage = isHit ? $"Hitting {opponent.Name} {shipName}!" : "Miss!";
+                var isHitMessage = isHit ? $"Hitting {opponent.Name}'s {shipName}!" : "Miss!";
                 var isSunkMessage = isSunk ? $"{player.Name} sunk {opponent.Name}'s {shipName}." : "";
+                var opponentsTurn = $"It's {opponent.Name}'s turn.";
+
                 if (game.Result.IsWinningResult())
                 {
                     await Clients.Group(gameId).GameLogUpdated($"{player.Name} wins!");
@@ -94,10 +96,9 @@ namespace IEvangelist.Blazing.WarFleet.Server.Hubs
                 else
                 {
                     await Clients.Group(gameId).NextTurn(opponent.Id);
+                    await Clients.Group(gameId).GameLogUpdated(
+                        $"{player.Name} fires on {shot}. {isHitMessage} {isSunkMessage} {opponentsTurn}");
                 }
-
-                await Clients.Group(gameId).GameLogUpdated(
-                    $"{player.Name} fires on {shot}. {isHitMessage} {isSunkMessage}");
             }
         }
 
